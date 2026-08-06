@@ -1,0 +1,5 @@
+indian_crimes_base/
+indian_cities_demographics.csv
+indian_prison_statistics.csv
+__pycache__/
+.DS_Store
