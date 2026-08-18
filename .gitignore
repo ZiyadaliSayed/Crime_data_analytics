@@ -3,3 +3,6 @@ indian_cities_demographics.csv
 indian_prison_statistics.csv
 __pycache__/
 .DS_Store
+crime_data_warehouse.db
+Dim_*.csv
+Fact_Crime_Incidents_*.csv

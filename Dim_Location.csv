@@ -1,325 +1,38 @@
-Location_ID,State,City,Population
-1,Unknown,Abohar ,145238
-2,Unknown,Achalpur ,112293
-3,Unknown,Adilabad ,117388
-4,Unknown,Adityapur ,173988
-5,Unknown,Adoni ,166537
-6,Unknown,Agartala ,399688
-7,Unknown,Agra ,1574542
-8,Unknown,Ahmadabad ,5570585
-9,Unknown,Ahmadnagar ,350905
-10,Unknown,Aizawl ,291822
-11,Unknown,Ajmer ,542580
-12,Unknown,Akbarpur ,111594
-13,Unknown,Akola ,427146
-14,Unknown,Alandur ,164162
-15,Unknown,Alappuzha ,174164
-16,Unknown,Aligarh ,872575
-17,Unknown,Allahabad ,1117094
-18,Unknown,Alwar ,315310
-19,Unknown,Ambala ,196216
-20,Unknown,Ambala Sadar ,104268
-21,Unknown,Ambarnath ,254003
-22,Unknown,Ambattur ,478134
-23,Unknown,Ambikapur ,114575
-24,Unknown,Ambur ,113856
-25,Unknown,Amravati ,646801
-26,Unknown,Amreli ,105980
-27,Unknown,Amritsar ,1132761
-28,Unknown,Amroha ,197135
-29,Unknown,Anand ,197351
-30,Unknown,Anantapur ,262340
-31,Unknown,Anantnag ,108505
-32,Unknown,Arrah ,261099
-33,Unknown,Asansol ,564491
-34,Unknown,Ashoknagar Kalyangarh ,123906
-35,Unknown,Aurangabad ,101520
-36,Unknown,Aurangabad ,1171330
-37,Unknown,Avadi ,344701
-38,Unknown,Azamgarh ,110980
-39,Unknown,Badlapur ,175516
-40,Unknown,Bagaha ,113012
-41,Unknown,Bagalkot ,112068
-42,Unknown,Bahadurgarh ,170426
-43,Unknown,Baharampur ,195363
-44,Unknown,Bahraich ,186241
-45,Unknown,Baidyabati ,121081
-46,Unknown,Baleshwar Town ,118202
-47,Unknown,Ballia ,104271
-48,Unknown,Bally ,291972
-49,Unknown,Bally City,115715
-50,Unknown,Balurghat ,151183
-1,Unknown,Banda ,154388
-2,Unknown,Bankura ,138036
-3,Unknown,Bansberia ,103799
-4,Unknown,Banswara ,100128
-5,Unknown,Baran ,118157
-6,Unknown,Baranagar ,248466
-7,Unknown,Barasat ,283443
-8,Unknown,Baraut ,102733
-9,Unknown,Barddhaman ,314638
-10,Unknown,Bareilly ,898167
-11,Unknown,Baripada Town ,110058
-12,Unknown,Barnala ,116454
-13,Unknown,Barrackpur ,154475
-14,Unknown,Barshi ,118573
-15,Unknown,Basirhat ,127135
-16,Unknown,Basti ,114651
-17,Unknown,Batala ,156400
-18,Unknown,Bathinda ,285813
-19,Unknown,Beawar ,145809
-20,Unknown,Begusarai ,251136
-21,Unknown,Belgaum ,488292
-22,Unknown,Bellary ,409644
-23,Unknown,Bengaluru,8425970
-24,Unknown,Bettiah ,132896
-25,Unknown,Betul ,103341
-26,Unknown,Bhadrak ,107369
-27,Unknown,Bhadravati ,150776
-28,Unknown,Bhadreswar ,101334
-29,Unknown,Bhagalpur ,398138
-30,Unknown,Bhalswa Jahangir Pur ,197150
-31,Unknown,Bharatpur ,252109
-32,Unknown,Bharuch ,168729
-33,Unknown,Bhatpara ,390467
-34,Unknown,Bhavnagar ,593768
-35,Unknown,Bhilai Nagar ,625697
-36,Unknown,Bhilwara ,360009
-37,Unknown,Bhimavaram ,142280
-38,Unknown,Bhind ,197332
-39,Unknown,Bhiwadi ,104883
-40,Unknown,Bhiwandi ,711329
-41,Unknown,Bhiwani ,197662
-42,Unknown,Bhopal ,1795648
-43,Unknown,Bhubaneswar Town ,837737
-44,Unknown,Bhuj ,147123
-45,Unknown,Bhusawal ,187750
-46,Unknown,Bid ,146237
-47,Unknown,Bidar ,211944
-48,Unknown,Bidhan Nagar ,218323
-49,Unknown,Biharsharif ,296889
-50,Unknown,Bijapur ,326360
-1,Unknown,Bikaner ,647804
-2,Unknown,Bilaspur ,330106
-3,Unknown,Bokaro Steel City ,413934
-4,Unknown,Bongaon ,110668
-5,Unknown,Botad ,130302
-6,Unknown,Brahmapur Town ,355823
-7,Unknown,Budaun ,159221
-8,Unknown,Bulandshahr ,222826
-9,Unknown,Bundi ,102823
-10,Unknown,Burari ,145584
-11,Unknown,Burhanpur ,210891
-12,Unknown,Buxar ,102591
-13,Unknown,Champdani ,110983
-14,Unknown,Chandannagar ,166949
-15,Unknown,Chandausi ,114254
-16,Unknown,Chandigarh ,960787
-17,Unknown,Chandrapur ,321036
-18,Unknown,Chapra ,201597
-19,Unknown,Chas ,141618
-20,Unknown,Chennai ,4681087
-21,Unknown,Chhattarpur ,133626
-22,Unknown,Chhindwara ,138266
-23,Unknown,Chikmagalur ,118496
-24,Unknown,Chilakaluripet ,101550
-25,Unknown,Chitradurga ,139914
-26,Unknown,Chittaurgarh ,116409
-27,Unknown,Chittoor ,153766
-28,Unknown,Churu ,119846
-29,Unknown,Coimbatore ,1061447
-30,Unknown,Cuddalore ,173361
-31,Unknown,Cuttack ,606007
-32,Unknown,Dabgram ,118464
-33,Unknown,Dallo Pura ,154955
-34,Unknown,Damoh ,124979
-35,Unknown,Darbhanga ,294116
-36,Unknown,Darjiling ,120414
-37,Unknown,Datia ,100466
-38,Unknown,Davanagere ,435128
-39,Unknown,Deesa ,111149
-40,Unknown,Dehradun ,578420
-41,Unknown,Dehri ,137068
-42,Unknown,Delhi ,11007835
-43,Unknown,Delhi Cantonment ,116352
-44,Unknown,Deoghar ,203116
-45,Unknown,Deoli ,169410
-46,Unknown,Deoria ,129570
-47,Unknown,Dewas ,289438
-48,Unknown,Dhanbad ,1161561
-49,Unknown,Dharmavaram ,121992
-50,Unknown,Dhaulpur ,126142
-1,Unknown,Dhule ,376093
-2,Unknown,Dibrugarh ,138661
-3,Unknown,Dimapur ,123777
-4,Unknown,Dinapur Nizamat ,182241
-5,Unknown,Dindigul ,207225
-6,Unknown,Dum Dum ,117637
-7,Unknown,Durg ,268679
-8,Unknown,Durgapur ,566937
-9,Unknown,Eluru ,214414
-10,Unknown,English Bazar ,216083
-11,Unknown,Erode ,156953
-12,Unknown,Etah ,118632
-13,Unknown,Etawah ,256790
-14,Unknown,Faizabad ,167544
-15,Unknown,Faridabad ,1404653
-16,Unknown,Farrukhabad-cum-Fatehgarh ,275754
-17,Unknown,Fatehpur ,193801
-18,Unknown,Firozabad ,603797
-19,Unknown,Firozpur ,110091
-20,Unknown,Gadag-Betigeri ,172813
-21,Unknown,Gandhidham ,248705
-22,Unknown,Gandhinagar ,208299
-23,Unknown,Ganganagar ,224773
-24,Unknown,Gangapur City ,119045
-25,Unknown,Gangawati ,105354
-26,Unknown,Gaya ,463454
-27,Unknown,Ghazipur ,110698
-28,Unknown,Giridih ,114447
-29,Unknown,Godhra ,143126
-30,Unknown,Gokal Pur ,121938
-31,Unknown,Gonda ,114353
-32,Unknown,Gondal ,112064
-33,Unknown,Gondiya ,132889
-34,Unknown,Gorakhpur ,671048
-35,Unknown,Greater Hyderabad ,6809970
-36,Unknown,Greater Mumbai ,12478447
-37,Unknown,Greater Noida ,107676
-38,Unknown,Gudivada ,118289
-39,Unknown,Gulbarga ,532031
-40,Unknown,Guna ,180978
-41,Unknown,Guntakal ,126479
-42,Unknown,Guntur ,651382
-43,Unknown,Gurgaon ,876824
-44,Unknown,Guwahati ,963429
-45,Unknown,Gwalior ,1053505
-46,Unknown,Habra ,149675
-47,Unknown,Hajipur ,147126
-48,Unknown,Haldia ,200762
-49,Unknown,Haldwani-cum-Kathgodam ,156060
-50,Unknown,Halisahar ,126893
-1,Unknown,Hanumangarh ,151104
-2,Unknown,Haora ,1072161
-3,Unknown,Hapur ,262801
-4,Unknown,Hardoi ,126890
-5,Unknown,Hardwar ,225235
-6,Unknown,Hassan ,133723
-7,Unknown,Hastsal ,177033
-8,Unknown,Hathras ,137509
-9,Unknown,Hazaribag ,142494
-10,Unknown,Hindaun ,105690
-11,Unknown,Hindupur ,151835
-12,Unknown,Hinganghat ,100416
-13,Unknown,Hisar ,301249
-14,Unknown,Hoshangabad ,117956
-15,Unknown,Hoshiarpur ,168443
-16,Unknown,Hospet ,206159
-17,Unknown,Hosur ,116821
-18,Unknown,Hubli-Dharwad ,943857
-19,Unknown,Hugli-Chinsurah ,177209
-20,Unknown,Ichalkaranji ,287570
-21,Unknown,Imphal ,264986
-22,Unknown,Indore ,1960631
-23,Unknown,Jabalpur ,1054336
-24,Unknown,Jagadhri ,124915
-25,Unknown,Jagdalpur ,125345
-26,Unknown,Jaipur ,3073350
-27,Unknown,Jalandhar ,862196
-28,Unknown,Jalgaon ,460468
-29,Unknown,Jalna ,285349
-30,Unknown,Jalpaiguri ,107351
-31,Unknown,Jamalpur ,105221
-32,Unknown,Jammu ,503690
-33,Unknown,Jamnagar ,529308
-34,Unknown,Jamshedpur ,629659
-35,Unknown,Jamuria ,144971
-36,Unknown,Jaunpur ,168128
-37,Unknown,Jehanabad ,102456
-38,Unknown,Jetpur Navagadh ,118550
-39,Unknown,Jhansi ,507293
-40,Unknown,Jhunjhunun ,118966
-41,Unknown,Jind ,166225
-42,Unknown,Jodhpur ,1033918
-43,Unknown,Junagadh ,320250
-44,Unknown,Kadapa ,341823
-45,Unknown,Kaithal ,144633
-46,Unknown,Kakinada ,312255
-47,Unknown,Kalol ,112126
-48,Unknown,Kalyani ,100620
-49,Unknown,Kamarhati ,336579
-50,Unknown,Kancheepuram ,164265
-1,Unknown,Kanchrapara ,122181
-2,Unknown,Kanpur ,2767031
-3,Unknown,Kanpur City,108035
-4,Unknown,Karaikkudi ,106793
-5,Unknown,Karawal Nagar ,224666
-6,Unknown,Karimnagar ,260899
-7,Unknown,Karnal ,286974
-8,Unknown,Kasganj ,101241
-9,Unknown,Kashipur ,121610
-10,Unknown,Katihar ,225982
-11,Unknown,Khammam ,184252
-12,Unknown,Khandwa ,200681
-13,Unknown,Khanna ,128130
-14,Unknown,Kharagpur ,206923
-15,Unknown,Khardaha ,111130
-16,Unknown,Khargone ,106452
-17,Unknown,Khora ,189410
-18,Unknown,Khurja ,111089
-19,Unknown,Kirari Suleman Nagar ,282598
-20,Unknown,Kishanganj ,107076
-21,Unknown,Kishangarh ,155019
-22,Unknown,Kochi ,601574
-23,Unknown,Kolar ,138553
-24,Unknown,Kolhapur ,549283
-25,Unknown,Kolkata ,4486679
-26,Unknown,Kollam ,349033
-27,Unknown,Korba ,363210
-28,Unknown,Kota ,1001365
-29,Unknown,Kozhikode ,432097
-30,Unknown,Krishnanagar ,152203
-31,Unknown,Kulti ,313977
-32,Unknown,Kumbakonam ,140113
-33,Unknown,Kurichi ,125800
-34,Unknown,Kurnool ,424920
-35,Unknown,Lakhimpur ,152010
-36,Unknown,Lalitpur ,133041
-37,Unknown,Latur ,382754
-38,Unknown,Loni ,512296
-39,Unknown,Lucknow ,2815601
-40,Unknown,Ludhiana ,1613878
-41,Unknown,Machilipatnam ,170008
-42,Unknown,Madanapalle ,135669
-43,Unknown,Madavaram ,118525
-44,Unknown,Madhyamgram ,198964
-45,Unknown,Madurai ,1016885
-46,Unknown,Mahbubnagar ,157902
-47,Unknown,Mahesana ,184133
-48,Unknown,Maheshtala ,449423
-49,Unknown,Mainpuri ,117327
-50,Unknown,Malegaon ,471006
-1,Unknown,Malerkotla ,135330
-2,Unknown,Mandoli ,120345
-3,Unknown,Mandsaur ,141468
-4,Unknown,Mandya ,137735
-5,Unknown,Mangalore ,484785
-6,Unknown,Mango ,224002
-7,Unknown,Mathura ,349336
-8,Unknown,Maunath Bhanjan ,279060
-9,Unknown,Medinipur ,169127
-10,Unknown,Meerut ,1309023
-11,Unknown,Mira Bhayander ,814655
-12,Unknown,Miryalaguda ,103855
-13,Unknown,Mirzapur-cum-Vindhyachal ,233691
-14,Unknown,Modinagar ,130161
-15,Unknown,Moga ,150432
-16,Unknown,Moradabad ,889810
-17,Unknown,Morena ,200506
-18,Unknown,Morvi ,188278
-19,Unknown,Motihari ,125183
-20,Unknown,Mughalsarai ,110110
-21,Unknown,Muktsar ,117085
-22,Unknown,Munger ,213101
-23,Unknown,Murwara ,221875
-24,Unknown,Mustafabad ,127012
+State,City,Population,Location_ID
+Andhra Pradesh,Capital District,1500000,101
+Arunachal Pradesh,Capital District,1500000,102
+Assam,Capital District,1500000,103
+Bihar,Capital District,1500000,104
+Chhattisgarh,Capital District,1500000,105
+Goa,Capital District,1500000,106
+Gujarat,Capital District,1500000,107
+Haryana,Capital District,1500000,108
+Himachal Pradesh,Capital District,1500000,109
+Jammu & Kashmir,Capital District,1500000,110
+Jharkhand,Capital District,1500000,111
+Karnataka,Capital District,1500000,112
+Kerala,Capital District,1500000,113
+Madhya Pradesh,Capital District,1500000,114
+Maharashtra,Capital District,1500000,115
+Manipur,Capital District,1500000,116
+Meghalaya,Capital District,1500000,117
+Mizoram,Capital District,1500000,118
+Nagaland,Capital District,1500000,119
+Odisha,Capital District,1500000,120
+Punjab,Capital District,1500000,121
+Rajasthan,Capital District,1500000,122
+Sikkim,Capital District,1500000,123
+Tamil Nadu,Capital District,1500000,124
+Telangana,Capital District,1500000,125
+Tripura,Capital District,1500000,126
+Uttar Pradesh,Capital District,1500000,127
+Uttarakhand,Capital District,1500000,128
+West Bengal,Capital District,1500000,129
+A & N Islands,Capital District,1500000,130
+Chandigarh,Capital District,1500000,131
+D&N Haveli,Capital District,1500000,132
+Daman & Diu,Capital District,1500000,133
+Delhi,Capital District,1500000,134
+Lakshadweep,Capital District,1500000,135
+Puducherry,Capital District,1500000,136
+Delhi Ut,Capital District,1500000,137

@@ -1,21 +1,8 @@
-Crime_Type_ID,Crime_Category
-1,General
-2,General
-3,General
-4,General
-5,General
-6,General
-7,General
-8,General
-9,General
-10,General
-11,General
-12,General
-13,General
-14,General
-15,General
-16,General
-17,General
-18,General
-19,General
-20,General
+Crime_Category,Crime_Type_ID
+Cases Against Police Personnels,201
+Escapes From Police Custody,202
+Victims Of Rape,203
+Murder,204
+Theft,205
+Cyber Crime,206
+Kidnapping,207
