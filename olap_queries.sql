@@ -1,119 +1,44 @@
--- 1. Roll-up: Aggregating from City to State level
+-- 1. Slice: High Crime States (Total Crimes > 100,000)
 SELECT 
-    l.State,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Location l ON f.Location_ID = l.Location_ID
-GROUP BY l.State
-ORDER BY Total_Incidents DESC;
+    s.State_Name, 
+    f.Total_Crimes, 
+    f.Crime_Rate
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+WHERE f.Total_Crimes > 100000
+ORDER BY f.Total_Crimes DESC;
 
--- 2. Roll-up: Aggregating from Month to Year level
+-- 2. Drill-down: Violent Crimes Breakdown
 SELECT 
-    t.Year,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-GROUP BY t.Year
-ORDER BY t.Year;
-
--- 3. Drill-down: Deconstructing annual crime trends into monthly breakdowns
-SELECT 
-    t.Year,
-    t.Month,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-GROUP BY t.Year, t.Month
-ORDER BY t.Year, t.Month;
-
--- 4. Drill-down: Deconstructing annual trends into monthly breakdowns by Crime Category
-SELECT 
-    t.Year,
-    t.Month,
-    c.Crime_Category,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-JOIN Dim_Crime_Profile c ON f.Crime_Type_ID = c.Crime_Type_ID
-GROUP BY t.Year, t.Month, c.Crime_Category
-ORDER BY t.Year, t.Month, Total_Incidents DESC;
-
--- 5. Slice: Filtering by a single dimension (Specific State)
-SELECT 
-    l.City,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Location l ON f.Location_ID = l.Location_ID
-WHERE l.State = (SELECT MIN(State) FROM Dim_Location)
-GROUP BY l.City
-ORDER BY Total_Incidents DESC
+    s.State_Name, 
+    f.Murder, 
+    f.Rape, 
+    f.Kidnapping, 
+    f.Robbery_Dacoity,
+    (f.Murder + f.Rape + f.Kidnapping + f.Robbery_Dacoity) AS Total_Violent_Crimes
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+ORDER BY Total_Violent_Crimes DESC
 LIMIT 10;
 
--- 6. Slice: Filtering by a single dimension (Specific Crime Category)
+-- 3. Cross-Tabulation: State Socio-Economic vs Crime
 SELECT 
-    l.State,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Location l ON f.Location_ID = l.Location_ID
-JOIN Dim_Crime_Profile c ON f.Crime_Type_ID = c.Crime_Type_ID
-WHERE c.Crime_Category = (SELECT MIN(Crime_Category) FROM Dim_Crime_Profile)
-GROUP BY l.State
-ORDER BY Total_Incidents DESC;
+    s.State_Name,
+    s.Avg_Literacy_Rate,
+    f.Crime_Rate,
+    p.Illiterate_Prisoners,
+    p.Graduate_Prisoners
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+LEFT JOIN Dim_Prison_Stats p ON s.State_ID = p.State_ID
+ORDER BY s.Avg_Literacy_Rate DESC;
 
--- 7. Dice: Multi-dimensional filtering by Year, State, and Victim Group
+-- 4. Roll-up: National Aggregation
 SELECT 
-    t.Year,
-    l.State,
-    v.Victim_Group,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-JOIN Dim_Location l ON f.Location_ID = l.Location_ID
-JOIN Dim_Victim v ON f.Victim_ID = v.Victim_ID
-WHERE 
-    t.Year = (SELECT MAX(Year) FROM Dim_Time)
-    AND l.State = (SELECT MIN(State) FROM Dim_Location)
-    AND v.Victim_Group = (SELECT MIN(Victim_Group) FROM Dim_Victim)
-GROUP BY t.Year, l.State, v.Victim_Group;
-
--- 8. Dice: Multi-dimensional filtering by Month, City, and Offender Demographic
-SELECT 
-    t.Month,
-    l.City,
-    o.Demographic,
-    SUM(f.Incident_Count) AS Total_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-JOIN Dim_Location l ON f.Location_ID = l.Location_ID
-JOIN Dim_Offender o ON f.Offender_ID = o.Offender_ID
-WHERE 
-    t.Month = (SELECT MIN(Month) FROM Dim_Time)
-    AND l.City = (SELECT MAX(City) FROM Dim_Location)
-    AND o.Demographic = (SELECT MIN(Demographic) FROM Dim_Offender)
-GROUP BY t.Month, l.City, o.Demographic;
-
--- 9. Pivot / Cross-tabulation: Matrix of Crime Categories across Years
-SELECT 
-    c.Crime_Category,
-    SUM(CASE WHEN t.Year = 2020 THEN f.Incident_Count ELSE 0 END) AS Incidents_2020,
-    SUM(CASE WHEN t.Year = 2021 THEN f.Incident_Count ELSE 0 END) AS Incidents_2021,
-    SUM(CASE WHEN t.Year = 2022 THEN f.Incident_Count ELSE 0 END) AS Incidents_2022
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-JOIN Dim_Crime_Profile c ON f.Crime_Type_ID = c.Crime_Type_ID
-GROUP BY c.Crime_Category
-ORDER BY c.Crime_Category;
-
--- 10. Pivot / Cross-tabulation: Matrix of Victim Groups across Months (for latest Year)
-SELECT 
-    v.Victim_Group,
-    SUM(CASE WHEN t.Month = 1 THEN f.Incident_Count ELSE 0 END) AS Jan_Incidents,
-    SUM(CASE WHEN t.Month = 2 THEN f.Incident_Count ELSE 0 END) AS Feb_Incidents,
-    SUM(CASE WHEN t.Month = 3 THEN f.Incident_Count ELSE 0 END) AS Mar_Incidents,
-    SUM(CASE WHEN t.Month = 4 THEN f.Incident_Count ELSE 0 END) AS Apr_Incidents
-FROM Fact_Crime_Incidents f
-JOIN Dim_Time t ON f.Time_ID = t.Time_ID
-JOIN Dim_Victim v ON f.Victim_ID = v.Victim_ID
-WHERE t.Year = (SELECT MAX(Year) FROM Dim_Time)
-GROUP BY v.Victim_Group
-ORDER BY v.Victim_Group;
+    SUM(f.Total_Crimes) AS National_Total_Crimes,
+    AVG(f.Crime_Rate) AS Avg_National_Crime_Rate,
+    SUM(f.Murder) AS National_Total_Murders,
+    SUM(p.Total_Prisoners) AS National_Total_Prisoners
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+LEFT JOIN Dim_Prison_Stats p ON s.State_ID = p.State_ID;
