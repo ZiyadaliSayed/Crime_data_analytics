@@ -20,7 +20,6 @@ def build_warehouse():
     
     csv_to_table = {
         'Dim_State.csv': 'Dim_State',
-        'Dim_Prison_Stats.csv': 'Dim_Prison_Stats',
         'Fact_Crime_Stats.csv': 'Fact_Crime_Stats'
     }
 

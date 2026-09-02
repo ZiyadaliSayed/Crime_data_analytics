@@ -26,16 +26,7 @@ def run_etl():
         Avg_Literacy_Rate=('effective_literacy_rate_total', 'mean')
     ).reset_index()
 
-    # 2. Load Local Prison Statistics
-    prison_df = pd.read_csv('indian_prison_statistics.csv')
-    prison_df['State_Name'] = prison_df['State/UT'].apply(clean_state_name)
-    state_prison = prison_df.groupby('State_Name').agg(
-        Total_Prisoners=('Total - Total', 'sum'),
-        Illiterate_Prisoners=('Educational Standard - Illiterate', 'sum'),
-        Graduate_Prisoners=('Educational Standard - Graduate', 'sum')
-    ).reset_index()
-
-    # 3. Load 2023 Crime Data
+    # 2. (Removed Prison Statistics)    # 3. Load 2023 Crime Data
     crime_df_2023 = pd.read_csv('real_crime_data_scraped.csv')
     crime_df_2023 = crime_df_2023.dropna(subset=['State / UT'])
     crime_df_2023 = crime_df_2023[~crime_df_2023['State / UT'].isin(['India', 'States', 'Union Territories (UT)', 'Union Territories'])]
@@ -98,12 +89,6 @@ def run_etl():
     dim_state.loc[dim_state['Avg_Literacy_Rate'] == 0, 'Avg_Literacy_Rate'] = 77.7
     dim_state['State_ID'] = range(1, len(dim_state) + 1)
     
-    dim_prison = pd.merge(dim_state[['State_ID', 'State_Name']], state_prison, on='State_Name', how='left')
-    dim_prison = dim_prison.fillna(0)
-    for col in ['Total_Prisoners', 'Illiterate_Prisoners', 'Graduate_Prisoners']:
-        dim_prison[col] = dim_prison[col].astype(int)
-    dim_prison['Prison_Stat_ID'] = range(1, len(dim_prison) + 1)
-
     # 6. Build Fact Table - 2024 (Using 2023 crime data as a proxy for 2024 to match literacy survey)
     fact_2024 = pd.merge(dim_state[['State_ID', 'State_Name']], crime_df_2023, on='State_Name', how='inner')
     fact_2024['Year'] = 2024
@@ -151,7 +136,6 @@ def run_etl():
     fact_crime = fact_crime[cols_to_keep]
 
     dim_state[['State_ID', 'State_Name', 'Total_Urban_Population', 'Avg_Literacy_Rate']].to_csv('Dim_State.csv', index=False)
-    dim_prison[['Prison_Stat_ID', 'State_ID', 'Total_Prisoners', 'Illiterate_Prisoners', 'Graduate_Prisoners']].to_csv('Dim_Prison_Stats.csv', index=False)
     fact_crime.to_csv('Fact_Crime_Stats.csv', index=False)
 
     print("Multi-Year ETL Pipeline completed. Data exported to CSVs.")

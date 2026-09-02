@@ -26,9 +26,6 @@ def load_data():
         s.State_Name,
         s.Total_Urban_Population,
         f.Literacy_Rate as Avg_Literacy_Rate,
-        p.Total_Prisoners,
-        p.Illiterate_Prisoners,
-        p.Graduate_Prisoners,
         f.Year,
         f.Total_Crimes,
         f.Crime_Rate,
@@ -42,7 +39,6 @@ def load_data():
         f.Corruption
     FROM Fact_Crime_Stats f
     JOIN Dim_State s ON f.State_ID = s.State_ID
-    LEFT JOIN Dim_Prison_Stats p ON s.State_ID = p.State_ID
     """
     df = pd.read_sql_query(query, conn)
     conn.close()
