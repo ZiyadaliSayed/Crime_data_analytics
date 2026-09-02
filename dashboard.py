@@ -32,11 +32,7 @@ def load_data():
         f.Murder,
         f.Rape,
         f.Kidnapping,
-        f.Extortion,
-        f.Robbery_Dacoity,
-        f.Hit_Run,
-        f.Illegal_Arms,
-        f.Corruption
+        f.Robbery
     FROM Fact_Crime_Stats f
     JOIN Dim_State s ON f.State_ID = s.State_ID
     """
@@ -78,11 +74,9 @@ selected_year = st.sidebar.selectbox("Select Year", options=years, index=len(yea
 
 # Apply Filter (We only filter year, NOT states. All states shown as requested)
 filtered_df = df[df['Year'] == selected_year].copy()
-filtered_df['Robbery'] = filtered_df['Robbery_Dacoity']
 
 if filtered_df.empty:
     filtered_df = df.copy()
-    filtered_df['Robbery'] = filtered_df['Robbery_Dacoity']
 
 # --- KPI Metric Cards ---
 st.subheader(f"National Key Performance Indicators ({selected_year})")
@@ -158,7 +152,6 @@ if page == "Detailed Analytics (Graphs)":
     if selected_year == 2017:
         st.info("⚠️ Official granular breakdowns for Murder, Rape, etc., are not available in this 2017 open dataset. Only 'Total Crimes' is available for 2017.")
     else:
-        state_dist = state_dist.rename(columns={'Robbery_Dacoity': 'Robbery'})
         melted = state_dist.melt(id_vars='State_Name', value_vars=['Murder', 'Rape', 'Kidnapping', 'Robbery'],
                             var_name='Crime Type', value_name='Count')
         fig_breakdown = px.bar(melted, x='State_Name', y='Count', color='Crime Type', barmode='group',
@@ -266,10 +259,10 @@ elif page == "Comparison":
         comp_df_2024 = comp_df[comp_df['Year'] == 2024].copy()
         
         if v_opt == 'All Violent Crimes':
-            comp_df_2024['Violent_Metric'] = comp_df_2024['Murder'] + comp_df_2024['Rape'] + comp_df_2024['Kidnapping'] + comp_df_2024['Robbery_Dacoity']
+            comp_df_2024['Violent_Metric'] = comp_df_2024['Murder'] + comp_df_2024['Rape'] + comp_df_2024['Kidnapping'] + comp_df_2024['Robbery']
             v_title = "Violent Crimes (Murder + Rape + Kidnapping + Robbery)"
         elif v_opt == 'Robbery':
-            comp_df_2024['Violent_Metric'] = comp_df_2024['Robbery_Dacoity']
+            comp_df_2024['Violent_Metric'] = comp_df_2024['Robbery']
             v_title = f"{v_opt}"
         else:
             comp_df_2024['Violent_Metric'] = comp_df_2024[v_opt]
