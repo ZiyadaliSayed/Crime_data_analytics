@@ -27,11 +27,11 @@ doc.add_paragraph('_' * 80)
 # Phase 2
 doc.add_paragraph('Phase 2: Data Collection', style='Body Text').runs[0].bold = True
 doc.add_paragraph('Collect data from multiple sources.\nExample Sources')
-doc.add_paragraph('Source 1: crime_dataset_india.csv (40,000+ incidents)\n| City | Date of Occurrence | Crime Description | Report Number |')
-doc.add_paragraph('Source 2: indian_cities_demographics.csv\n| state_name | population_total | effective_literacy_rate_total |')
-
-doc.add_paragraph('Source 3: wikipedia_crime_in_india.csv\n| State/UT | 2017 |')
-doc.add_paragraph('Source 4: wikipedia_literacy_rates.csv\n| State or UT | 2017 Total | 2024 Total |')
+doc.add_paragraph('Source 1: crime_dataset_india.csv (40,000+ incidents Kaggle Dataset)\n| City | Date of Occurrence | Crime Description | Report Number |')
+doc.add_paragraph('Source 2: ncrb_2024_statewise_supplement.csv (Used to supplement missing states in the Kaggle sample)\n| State / UT | Total Crimes | Crime Rate | Murder | Rape | Kidnapping | Extortion |')
+doc.add_paragraph('Source 3: indian_cities_demographics.csv\n| state_name | population_total | effective_literacy_rate_total |')
+doc.add_paragraph('Source 4: wikipedia_crime_in_india.csv (Local CSV)\n| State/UT | 2017 |')
+doc.add_paragraph('Source 5: wikipedia_literacy_rates.csv (Local CSV)\n| State or UT | 2017 Total | 2024 Total |')
 doc.add_paragraph('Deliverable\nRaw datasets', style='Body Text').runs[0].bold = True
 
 doc.add_paragraph('_' * 80)
@@ -50,7 +50,7 @@ doc.add_paragraph('_' * 80)
 
 # Phase 4
 doc.add_paragraph('Phase 4: ETL Pipeline', style='Body Text').runs[0].bold = True
-doc.add_paragraph('Extract\nRead CSV files\ncrime_dataset_india.csv\nindian_cities_demographics.csv\nwikipedia_crime_in_india.csv\nwikipedia_literacy_rates.csv')
+doc.add_paragraph('Extract\nRead CSV files\ncrime_dataset_india.csv\nncrb_2024_statewise_supplement.csv\nindian_cities_demographics.csv\nwikipedia_crime_in_india.csv\nwikipedia_literacy_rates.csv')
 doc.add_paragraph('Transform\nPerform')
 doc.add_paragraph('• Merge tables based on State_Name', style='List Bullet')
 doc.add_paragraph('• Data cleaning', style='List Bullet')
