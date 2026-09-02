@@ -51,11 +51,7 @@ def run_etl():
         Murder=('Crime Description', lambda x: (x == 'HOMICIDE').sum()),
         Rape=('Crime Description', lambda x: (x == 'SEXUAL ASSAULT').sum()),
         Kidnapping=('Crime Description', lambda x: (x == 'KIDNAPPING').sum()),
-        Extortion=('Crime Description', lambda x: (x == 'EXTORTION').sum()),
-        Robbery_Dacoity=('Crime Description', lambda x: (x == 'ROBBERY').sum()),
-        Hit_Run=('Crime Description', lambda x: (x == 'TRAFFIC VIOLATION').sum()),
-        Illegal_Arms=('Crime Description', lambda x: (x == 'ILLEGAL POSSESSION').sum()),
-        Corruption=('Crime Description', lambda x: (x == 'FRAUD').sum())
+        Robbery=('Crime Description', lambda x: (x == 'ROBBERY').sum())
     ).reset_index()
     
     # The Kaggle sample dataset only covers 20 major cities. To ensure the final dashboard contains 
@@ -68,15 +64,14 @@ def run_etl():
         'Total Crimes (IPC+SLL) 2023': 'Total_Crimes',
         'Crime Rate (IPC+SLL) 2023': 'Crime_Rate',
         'Murder 2023': 'Murder', 'Rape 2023': 'Rape', 'Kidnapping 2023': 'Kidnapping',
-        'Extortion 2023': 'Extortion', 'Robbery & Dacoity 2023': 'Robbery_Dacoity',
-        'Hit & Run 2023': 'Hit_Run', 'Illegal arms 2023': 'Illegal_Arms', 'Corruption (Total cases) 2023': 'Corruption'
+        'Robbery & Dacoity 2023': 'Robbery'
     })
-    for col in ['Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']:
+    for col in ['Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Robbery']:
         if col in ncrb_supplement.columns:
             ncrb_supplement[col] = pd.to_numeric(ncrb_supplement[col].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
     
     # Overwrite the sampled state_crimes_2024 with the full augmented dataset for complete state coverage
-    state_crimes_2024 = ncrb_supplement[['State_Name', 'Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']]
+    state_crimes_2024 = ncrb_supplement[['State_Name', 'Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Robbery']]
         
     # 4. Load 2016, 2017, 2018, 2019 Crime Data (Local CSV)
     historical_table = pd.read_csv('wikipedia_crime_in_india.csv')
@@ -133,7 +128,7 @@ def run_etl():
     fact_2024['Crime_Rate'] = np.where(fact_2024['Total_Urban_Population'] > 0, 
                                       (fact_2024['Total_Crimes'] / fact_2024['Total_Urban_Population']) * 100000, 0).round(2)
     
-    for col in ['Total_Crimes', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']:
+    for col in ['Total_Crimes', 'Murder', 'Rape', 'Kidnapping', 'Robbery']:
         fact_2024[col] = fact_2024[col].fillna(0).astype(int)
 
     # 7. Build Fact Table - 2017 Only
@@ -149,8 +144,8 @@ def run_etl():
         
         # To strictly use 100% real data, we do not mathematically estimate specific violent crimes for 2017.
         # We set them to 0 (meaning 'No Data Available' for specific breakdowns, only Total Crimes is available).
-        rate_cols = ['Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms']
-        for col in rate_cols + ['Corruption']:
+        rate_cols = ['Murder', 'Rape', 'Kidnapping', 'Robbery']
+        for col in rate_cols:
             df_y[col] = 0
             
         historical_facts.append(df_y)
@@ -159,7 +154,7 @@ def run_etl():
     fact_crime = pd.concat(all_facts, ignore_index=True)
     
     # 8. Export
-    cols_to_keep = ['State_ID', 'Year', 'Total_Crimes', 'Crime_Rate', 'Literacy_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']
+    cols_to_keep = ['State_ID', 'Year', 'Total_Crimes', 'Crime_Rate', 'Literacy_Rate', 'Murder', 'Rape', 'Kidnapping', 'Robbery']
     fact_crime = fact_crime[cols_to_keep]
 
     dim_state[['State_ID', 'State_Name', 'Total_Urban_Population', 'Avg_Literacy_Rate']].to_csv('Dim_State.csv', index=False)

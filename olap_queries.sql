@@ -35,8 +35,8 @@ SELECT
     f.Murder, 
     f.Rape, 
     f.Kidnapping, 
-    f.Robbery_Dacoity,
-    (f.Murder + f.Rape + f.Kidnapping + f.Robbery_Dacoity) AS Total_Violent_Crimes
+    f.Robbery,
+    (f.Murder + f.Rape + f.Kidnapping + f.Robbery) AS Total_Violent_Crimes
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
 WHERE f.Year = 2023
@@ -93,12 +93,11 @@ WHERE f.Year = 2023;
 -- 9. Dice: Property Crimes in South Indian States (Subsetting Location and Crime Type)
 SELECT 
     s.State_Name,
-    f.Robbery_Dacoity,
-    f.Extortion
+    f.Robbery
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
 WHERE f.Year = 2023 AND s.State_Name IN ('Kerala', 'Tamil Nadu', 'Karnataka', 'Andhra Pradesh', 'Telangana')
-ORDER BY f.Robbery_Dacoity DESC;
+ORDER BY f.Robbery DESC;
 
 -- 10. Top-N Analysis: Highest Murder Rates per 1 Lakh Population (Advanced Aggregation)
 SELECT 

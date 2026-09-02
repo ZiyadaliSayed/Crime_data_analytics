@@ -21,10 +21,6 @@ CREATE TABLE Fact_Crime_Stats (
     Murder INTEGER,
     Rape INTEGER,
     Kidnapping INTEGER,
-    Extortion INTEGER,
-    Robbery_Dacoity INTEGER,
-    Hit_Run INTEGER,
-    Illegal_Arms INTEGER,
-    Corruption INTEGER,
+    Robbery INTEGER,
     FOREIGN KEY(State_ID) REFERENCES Dim_State(State_ID)
 );
