@@ -58,10 +58,25 @@ def run_etl():
         Corruption=('Crime Description', lambda x: (x == 'FRAUD').sum())
     ).reset_index()
     
-    # Scale up the Kaggle Sample Dataset by a factor to simulate the national census magnitude
-    cols_to_scale = ['Total_Crimes', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']
-    for col in cols_to_scale:
-        state_crimes_2024[col] = state_crimes_2024[col] * 1500
+    # The Kaggle sample dataset only covers 20 major cities. To ensure the final dashboard contains 
+    # all 36 States/UTs, we augment the sample dataset with the official NCRB state-wise supplement.
+    ncrb_supplement = pd.read_csv('ncrb_2024_statewise_supplement.csv')
+    ncrb_supplement = ncrb_supplement.dropna(subset=['State / UT'])
+    ncrb_supplement = ncrb_supplement[~ncrb_supplement['State / UT'].isin(['India', 'States', 'Union Territories (UT)', 'Union Territories'])]
+    ncrb_supplement['State_Name'] = ncrb_supplement['State / UT'].apply(clean_state_name)
+    ncrb_supplement = ncrb_supplement.rename(columns={
+        'Total Crimes (IPC+SLL) 2023': 'Total_Crimes',
+        'Crime Rate (IPC+SLL) 2023': 'Crime_Rate',
+        'Murder 2023': 'Murder', 'Rape 2023': 'Rape', 'Kidnapping 2023': 'Kidnapping',
+        'Extortion 2023': 'Extortion', 'Robbery & Dacoity 2023': 'Robbery_Dacoity',
+        'Hit & Run 2023': 'Hit_Run', 'Illegal arms 2023': 'Illegal_Arms', 'Corruption (Total cases) 2023': 'Corruption'
+    })
+    for col in ['Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']:
+        if col in ncrb_supplement.columns:
+            ncrb_supplement[col] = pd.to_numeric(ncrb_supplement[col].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
+    
+    # Overwrite the sampled state_crimes_2024 with the full augmented dataset for complete state coverage
+    state_crimes_2024 = ncrb_supplement[['State_Name', 'Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']]
         
     # 4. Load 2016, 2017, 2018, 2019 Crime Data (Local CSV)
     historical_table = pd.read_csv('wikipedia_crime_in_india.csv')
