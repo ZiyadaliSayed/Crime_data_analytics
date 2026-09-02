@@ -1,14 +1,35 @@
--- 1. Slice: High Crime States (Total Crimes > 100,000)
+-- 1. Slice: High Crime States in 2023 (Isolating a single dimension: Year=2023, Total_Crimes > 100,000)
 SELECT 
     s.State_Name, 
     f.Total_Crimes, 
     f.Crime_Rate
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
-WHERE f.Total_Crimes > 100000
+WHERE f.Year = 2023 AND f.Total_Crimes > 100000
 ORDER BY f.Total_Crimes DESC;
 
--- 2. Drill-down: Violent Crimes Breakdown
+-- 2. Dice: Specific Violent Crimes in Top States across Multiple Years (Subsetting Year and Location)
+SELECT 
+    f.Year,
+    s.State_Name, 
+    f.Murder, 
+    f.Rape
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+WHERE f.Year IN (2022, 2023) AND s.State_Name IN ('Uttar Pradesh', 'Maharashtra', 'Delhi')
+ORDER BY f.Year DESC, f.Murder DESC;
+
+-- 3. Roll-up: National Aggregation of Crimes by Year (Summarizing data up the hierarchy)
+SELECT 
+    f.Year,
+    SUM(f.Total_Crimes) AS National_Total_Crimes,
+    AVG(f.Crime_Rate) AS Avg_National_Crime_Rate,
+    SUM(f.Murder) AS National_Total_Murders
+FROM Fact_Crime_Stats f
+GROUP BY f.Year
+ORDER BY f.Year DESC;
+
+-- 4. Drill-down: Violent Crimes Breakdown for 2023 (Navigating from total crimes down to specific categories)
 SELECT 
     s.State_Name, 
     f.Murder, 
@@ -18,27 +39,75 @@ SELECT
     (f.Murder + f.Rape + f.Kidnapping + f.Robbery_Dacoity) AS Total_Violent_Crimes
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
+WHERE f.Year = 2023
 ORDER BY Total_Violent_Crimes DESC
 LIMIT 10;
 
--- 3. Cross-Tabulation: State Socio-Economic vs Crime
+-- 5. Pivot (Cross-tabulation): States vs Years for Total Crimes (Rotating the data cube)
+SELECT 
+    s.State_Name,
+    MAX(CASE WHEN f.Year = 2022 THEN f.Total_Crimes ELSE 0 END) AS Crimes_2022,
+    MAX(CASE WHEN f.Year = 2023 THEN f.Total_Crimes ELSE 0 END) AS Crimes_2023,
+    (MAX(CASE WHEN f.Year = 2023 THEN f.Total_Crimes ELSE 0 END) - 
+     MAX(CASE WHEN f.Year = 2022 THEN f.Total_Crimes ELSE 0 END)) AS YoY_Growth
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+GROUP BY s.State_Name
+ORDER BY Crimes_2023 DESC
+LIMIT 10;
+
+-- 6. Drill-down: Prison Demographics by State (Navigating down to educational backgrounds)
+SELECT 
+    s.State_Name,
+    p.Total_Prisoners,
+    p.Illiterate_Prisoners,
+    p.Graduate_Prisoners,
+    ROUND((CAST(p.Illiterate_Prisoners AS FLOAT) / p.Total_Prisoners) * 100, 2) AS Illiteracy_Percentage
+FROM Dim_Prison_Stats p
+JOIN Dim_State s ON p.State_ID = s.State_ID
+WHERE p.Total_Prisoners > 5000
+ORDER BY Illiteracy_Percentage DESC
+LIMIT 10;
+
+-- 7. Slice: Low Literacy States and Crime Rates (Isolating dimension where Literacy < 75%)
 SELECT 
     s.State_Name,
     s.Avg_Literacy_Rate,
     f.Crime_Rate,
-    p.Illiterate_Prisoners,
-    p.Graduate_Prisoners
+    f.Total_Crimes
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+WHERE f.Year = 2023 AND s.Avg_Literacy_Rate < 80.0
+ORDER BY f.Crime_Rate DESC;
+
+-- 8. Roll-up: Total National Prisoners vs Crimes (Aggregating multiple fact measures)
+SELECT 
+    SUM(f.Total_Crimes) AS Total_Crimes_2023,
+    SUM(p.Total_Prisoners) AS Total_Incarcerated,
+    ROUND((CAST(SUM(p.Total_Prisoners) AS FLOAT) / SUM(f.Total_Crimes)) * 100, 2) AS Prisoner_to_Crime_Ratio
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
 LEFT JOIN Dim_Prison_Stats p ON s.State_ID = p.State_ID
-ORDER BY s.Avg_Literacy_Rate DESC;
+WHERE f.Year = 2023;
 
--- 4. Roll-up: National Aggregation
+-- 9. Dice: Property Crimes in South Indian States (Subsetting Location and Crime Type)
 SELECT 
-    SUM(f.Total_Crimes) AS National_Total_Crimes,
-    AVG(f.Crime_Rate) AS Avg_National_Crime_Rate,
-    SUM(f.Murder) AS National_Total_Murders,
-    SUM(p.Total_Prisoners) AS National_Total_Prisoners
+    s.State_Name,
+    f.Robbery_Dacoity,
+    f.Extortion
 FROM Fact_Crime_Stats f
 JOIN Dim_State s ON f.State_ID = s.State_ID
-LEFT JOIN Dim_Prison_Stats p ON s.State_ID = p.State_ID;
+WHERE f.Year = 2023 AND s.State_Name IN ('Kerala', 'Tamil Nadu', 'Karnataka', 'Andhra Pradesh', 'Telangana')
+ORDER BY f.Robbery_Dacoity DESC;
+
+-- 10. Top-N Analysis: Highest Murder Rates per 1 Lakh Population (Advanced Aggregation)
+SELECT 
+    s.State_Name,
+    f.Murder,
+    s.Total_Urban_Population,
+    ROUND((CAST(f.Murder AS FLOAT) / s.Total_Urban_Population) * 100000, 2) AS Murder_Rate_Per_Lakh
+FROM Fact_Crime_Stats f
+JOIN Dim_State s ON f.State_ID = s.State_ID
+WHERE f.Year = 2023 AND s.Total_Urban_Population > 1000000
+ORDER BY Murder_Rate_Per_Lakh DESC
+LIMIT 5;

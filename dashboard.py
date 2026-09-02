@@ -25,7 +25,7 @@ def load_data():
     SELECT 
         s.State_Name,
         s.Total_Urban_Population,
-        s.Avg_Literacy_Rate,
+        f.Literacy_Rate as Avg_Literacy_Rate,
         p.Total_Prisoners,
         p.Illiterate_Prisoners,
         p.Graduate_Prisoners,
@@ -59,6 +59,9 @@ def load_data():
     }
     df['Map_State_Name'] = df['State_Name'].replace(state_mapping)
     
+    # Sort by Year to ensure Plotly line charts draw in chronological order
+    df = df.sort_values(by=['State_Name', 'Year']).reset_index(drop=True)
+    
     return df
 
 df = load_data()
@@ -71,7 +74,7 @@ if df.empty:
 st.sidebar.header("Navigation & Filters")
 
 # 1. Page Navigation
-page = st.sidebar.radio("Go to", ["Map of India (Overview)", "Detailed Analytics (Graphs)"])
+page = st.sidebar.radio("Go to", ["Detailed Analytics (Graphs)", "Comparison"])
 
 # 2. Year Selection
 years = sorted(df['Year'].unique().tolist())
@@ -103,45 +106,8 @@ st.markdown("---")
 
 st.info("ℹ️ **What does 'Crime Rate' mean?** The Crime Rate indicates the number of reported crimes for every 100,000 people. For example, a Crime Rate of 335 means there were 335 crimes committed for every 100,000 individuals living in that region. The specific crime counts (Murder, Rape, etc.) shown below are exact numbers calculated based on these rates.")
 
-# --- PAGE 1: Map View ---
-if page == "Map of India (Overview)":
-    st.header("Geospatial Overview of Crime & Illiteracy")
-    
-    try:
-        with open('india_states.geojson', 'r') as f:
-            india_geojson = json.load(f)
-            
-        fig_map = px.choropleth(
-            filtered_df,
-            geojson=india_geojson,
-            featureidkey='properties.ST_NM',
-            locations='Map_State_Name',
-            color='Total_Crimes',
-            color_continuous_scale="Reds",
-            hover_name='State_Name',
-            hover_data={
-                'Map_State_Name': False,
-                'Total_Crimes': True,
-                'Crime_Rate': True,
-                'Illiteracy_Rate': ':.2f',
-                'Total_Prisoners': True,
-                'Murder': True,
-                'Rape': True,
-                'Kidnapping': True,
-                'Robbery_Dacoity': False, # Hide original
-                'Robbery': True           # Show renamed
-            },
-            title="Interactive Crime Heatmap of India"
-        )
-        fig_map.update_geos(fitbounds="locations", visible=False)
-        fig_map.update_layout(height=700, margin={"r":0,"t":40,"l":0,"b":0})
-        st.plotly_chart(fig_map, use_container_width=True)
-        
-    except FileNotFoundError:
-        st.error("india_states.geojson not found. Please run the curl command to download it.")
-
-# --- PAGE 2: Graphs View ---
-elif page == "Detailed Analytics (Graphs)":
+# --- PAGE 1: Graphs View ---
+if page == "Detailed Analytics (Graphs)":
     st.header("1. State Crime Ranking (All States)")
     
     # Show ALL states, no .head() or .tail() limitations
@@ -149,39 +115,49 @@ elif page == "Detailed Analytics (Graphs)":
     fig_state = px.bar(state_dist, x='Total_Crimes', y='State_Name', orientation='h',
                        labels={'Total_Crimes': 'Total Crimes', 'State_Name': 'State'},
                        text='Total_Crimes',
+                       hover_data={'Total_Crimes': True, 'Crime_Rate': ':.2f'},
                        title="Total Crimes by State (Full Ranking)", color='Total_Crimes', color_continuous_scale="Reds")
     fig_state.update_traces(textposition='outside')
     # Add 15% padding to the x-axis so the text on the largest bar doesn't get cut off
     fig_state.update_xaxes(range=[0, state_dist['Total_Crimes'].max() * 1.15])
-    fig_state.update_layout(height=800) # Taller to fit all states
+    fig_state.update_layout(height=800, hovermode='y unified', margin=dict(l=150, r=20)) # Taller to fit all states and add left margin
     st.plotly_chart(fig_state, use_container_width=True)
 
     st.markdown("---")
-    st.header("2. Does Illiteracy Drive Crime? (Correlation)")
+    st.header("2. State Illiteracy Ranking (All States)")
+    
+    illit_dist = filtered_df.sort_values('Illiteracy_Rate', ascending=True)
+    fig_illit = px.bar(illit_dist, x='Illiteracy_Rate', y='State_Name', orientation='h',
+                       labels={'Illiteracy_Rate': 'Illiteracy Percentage (%)', 'State_Name': 'State'},
+                       text=illit_dist['Illiteracy_Rate'].apply(lambda x: f"{x:.1f}%"),
+                       hover_data={'Illiteracy_Rate': ':.2f', 'Avg_Literacy_Rate': ':.2f'},
+                       title="Illiteracy Percentage by State (Full Ranking)", color='Illiteracy_Rate', color_continuous_scale="Blues")
+    fig_illit.update_traces(textposition='outside')
+    fig_illit.update_xaxes(range=[0, illit_dist['Illiteracy_Rate'].max() * 1.15])
+    fig_illit.update_layout(height=800, hovermode='y unified', margin=dict(l=150, r=20))
+    st.plotly_chart(fig_illit, use_container_width=True)
+
+    st.markdown("---")
+    st.header("3. Does Illiteracy Drive Crime? (Correlation)")
     st.markdown("The following chart proves the strong positive relationship between high illiteracy rates and higher crime rates across Indian states. The trendline visually establishes that **illiteracy is a major contributor to crime.**")
     
-    col_corr1, col_corr2 = st.columns([2, 1])
-    
-    with col_corr1:
-        # Illiteracy vs Crime with Trendline
-        fig_illit_crime = px.scatter(
-            filtered_df, 
-            x="Illiteracy_Rate", 
-            y="Crime_Rate", 
-            color="State_Name",
-            hover_name="State_Name", 
-            title="Illiteracy Percentage vs. Crime Rate",
-            labels={"Illiteracy_Rate": "Illiteracy Percentage (%)", "Crime_Rate": "Crime Rate (Per 1 Lakh)"},
-            trendline="ols" # Adds ordinary least squares regression line
-        )
-        fig_illit_crime.update_traces(marker=dict(size=14, opacity=0.8, line=dict(width=1, color='DarkSlateGrey')))
-        st.plotly_chart(fig_illit_crime, use_container_width=True)
-        
-    with col_corr2:
-        st.info("💡 **Insight:** The upward trendline (OLS regression) clearly demonstrates that states with higher illiteracy rates tend to suffer from significantly higher crime rates. This confirms the hypothesis that education is a powerful deterrent to crime.")
+    # Illiteracy vs Crime with Trendline
+    fig_illit_crime = px.scatter(
+        filtered_df, 
+        x="Illiteracy_Rate", 
+        y="Crime_Rate", 
+        color="State_Name",
+        hover_name="State_Name", 
+        title="Illiteracy Percentage vs. Crime Rate",
+        labels={"Illiteracy_Rate": "Illiteracy Percentage (%)", "Crime_Rate": "Crime Rate (Per 1 Lakh)"},
+        trendline="ols" # Adds ordinary least squares regression line
+    )
+    fig_illit_crime.update_traces(marker=dict(size=14, opacity=0.8, line=dict(width=1, color='DarkSlateGrey')))
+    fig_illit_crime.update_layout(height=600)
+    st.plotly_chart(fig_illit_crime, use_container_width=True)
         
     st.markdown("---")
-    st.header("3. Violent Crime Breakdown")
+    st.header("4. Violent Crime Breakdown")
     
     # Using all states instead of top 10 as per user request to show all
     # Rename for clearer display
@@ -190,11 +166,11 @@ elif page == "Detailed Analytics (Graphs)":
                         var_name='Crime Type', value_name='Count')
     fig_breakdown = px.bar(melted, x='State_Name', y='Count', color='Crime Type', barmode='group',
                            title="Violent Crime Breakdown across All States")
-    fig_breakdown.update_layout(xaxis={'categoryorder':'total descending'}, height=700, hovermode='x unified')
+    fig_breakdown.update_layout(xaxis={'categoryorder':'total descending'}, height=700, hovermode='x unified', margin=dict(b=150))
     st.plotly_chart(fig_breakdown, use_container_width=True)
     
     st.markdown("---")
-    st.header("4. National Crime Trend Over Time")
+    st.header("5. National Crime Trend Over Time")
     st.markdown("This line chart uses the historical dataset to track the national crime trajectory over available years.")
     
     # Calculate national metrics by year
@@ -202,17 +178,122 @@ elif page == "Detailed Analytics (Graphs)":
         Total_Crimes=('Total_Crimes', 'sum'),
         Total_Urban_Population=('Total_Urban_Population', 'sum')
     ).reset_index()
-    trend_df['National_Crime_Rate'] = (trend_df['Total_Crimes'] / trend_df['Total_Urban_Population']) * 100000
+    trend_df['National_Crime_Rate'] = ((trend_df['Total_Crimes'] / trend_df['Total_Urban_Population']) * 100000).round(1)
     
     fig_trend = px.line(trend_df, x='Year', y='National_Crime_Rate', markers=True,
                         title="National Crime Rate Evolution",
                         labels={'National_Crime_Rate': 'National Crime Rate (per 1 Lakh)', 'Year': 'Year'})
     
-    # Force x-axis to show discrete integer years
-    fig_trend.update_xaxes(dtick=1)
+    # Force x-axis to show only the specific available years with padding so markers aren't cut off
+    fig_trend.update_xaxes(tickvals=years, range=[min(years) - 0.5, max(years) + 0.5])
     fig_trend.update_traces(line=dict(width=4), marker=dict(size=12, color="DarkRed"))
+    fig_trend.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15), margin=dict(l=50, r=50))
     
     st.plotly_chart(fig_trend, use_container_width=True)
+
+# --- PAGE 2: Comparison ---
+elif page == "Comparison":
+    st.header("State Comparison (2017 vs 2024)")
+    st.markdown("Compare states across different years to see how crime and illiteracy trends evolve.")
+    
+    selected_states = st.multiselect(
+        "Select States to Compare (Max 5)", 
+        options=sorted(df['State_Name'].unique()), 
+        default=['Maharashtra', 'Uttar Pradesh', 'Kerala', 'Delhi'],
+        max_selections=5
+    )
+    
+    use_log_scale = st.checkbox("Use Logarithmic Scale for Crime Totals (Recommended for comparing states with vastly different numbers)")
+    
+    if selected_states:
+        comp_df = df[df['State_Name'].isin(selected_states)].copy()
+        comp_df['Year_Str'] = comp_df['Year'].astype(str)
+        
+        # Color mapped by Year to show grouped bars clearly
+        year_color_map = {'2017': '#1f77b4', '2024': '#ff7f0e'}
+        
+        def render_change_metrics(df_metric, col_name, is_float=False):
+            with st.container(border=True):
+                st.markdown("#### 2017 to 2024 Change")
+                for state in sorted(selected_states):
+                    v_2017 = df_metric[(df_metric['State_Name'] == state) & (df_metric['Year'] == 2017)][col_name].values
+                    v_2024 = df_metric[(df_metric['State_Name'] == state) & (df_metric['Year'] == 2024)][col_name].values
+                    if len(v_2017) > 0 and len(v_2024) > 0:
+                        change = v_2024[0] - v_2017[0]
+                        val_str = f"{v_2024[0]:,.1f}" if is_float else f"{int(v_2024[0]):,}"
+                        chg_str = f"{change:,.1f}" if is_float else f"{int(change):,}"
+                        st.metric(label=state, value=val_str, delta=chg_str, delta_color="normal")
+        
+        # 1. Crime Comparison
+        st.subheader("1. Crime Comparison (Total Crimes)")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            crime_order = comp_df.groupby('State_Name')['Total_Crimes'].max().sort_values(ascending=False).index.tolist()
+            fig_comp_crime = px.bar(comp_df, x='State_Name', y='Total_Crimes', color='Year_Str', barmode='group',
+                                     title="Total Crimes (2017 vs 2024)",
+                                     category_orders={"State_Name": crime_order},
+                                     color_discrete_map=year_color_map,
+                                     labels={'Total_Crimes': 'Total Crimes', 'Year_Str': 'Year', 'State_Name': 'State'})
+            if use_log_scale:
+                fig_comp_crime.update_yaxes(type='log')
+            else:
+                fig_comp_crime.update_yaxes(rangemode='tozero')
+            fig_comp_crime.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15))
+            st.plotly_chart(fig_comp_crime, use_container_width=True)
+        with col2:
+            render_change_metrics(comp_df, 'Total_Crimes', is_float=False)
+            
+        st.markdown("---")
+        
+        # 2. Illiteracy Comparison
+        st.subheader("2. Illiteracy Comparison")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            illit_order = comp_df.groupby('State_Name')['Illiteracy_Rate'].max().sort_values(ascending=False).index.tolist()
+            fig_comp_illit = px.bar(comp_df, x='State_Name', y='Illiteracy_Rate', color='Year_Str', barmode='group',
+                                     title="Illiteracy Percentage (2017 vs 2024)",
+                                     category_orders={"State_Name": illit_order},
+                                     color_discrete_map=year_color_map,
+                                     labels={'Illiteracy_Rate': 'Illiteracy Percentage (%)', 'Year_Str': 'Year', 'State_Name': 'State'})
+            fig_comp_illit.update_yaxes(rangemode='tozero')
+            fig_comp_illit.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15))
+            st.plotly_chart(fig_comp_illit, use_container_width=True)
+        with col2:
+            render_change_metrics(comp_df, 'Illiteracy_Rate', is_float=True)
+            
+        st.markdown("---")
+        
+        # 3. Violent Crime Comparison
+        st.subheader("3. Violent Crime Comparison")
+        v_opt = st.selectbox("Select Violent Crime Type to Compare:", ['All Violent Crimes', 'Murder', 'Rape', 'Kidnapping', 'Robbery'])
+        if v_opt == 'All Violent Crimes':
+            comp_df['Violent_Metric'] = comp_df['Murder'] + comp_df['Rape'] + comp_df['Kidnapping'] + comp_df['Robbery_Dacoity']
+            v_title = "Violent Crimes (Murder + Rape + Kidnapping + Robbery) Over Time"
+        elif v_opt == 'Robbery':
+            comp_df['Violent_Metric'] = comp_df['Robbery_Dacoity']
+            v_title = f"{v_opt} Over Time"
+        else:
+            comp_df['Violent_Metric'] = comp_df[v_opt]
+            v_title = f"{v_opt} Over Time"
+            
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            violent_order = comp_df.groupby('State_Name')['Violent_Metric'].max().sort_values(ascending=False).index.tolist()
+            fig_comp_violent = px.bar(comp_df, x='State_Name', y='Violent_Metric', color='Year_Str', barmode='group',
+                                       title=v_title.replace("Over Time", "(2017 vs 2024)"),
+                                       category_orders={"State_Name": violent_order},
+                                       color_discrete_map=year_color_map,
+                                       labels={'Violent_Metric': f'Total {v_opt}', 'Year_Str': 'Year', 'State_Name': 'State'})
+            if use_log_scale:
+                fig_comp_violent.update_yaxes(type='log')
+            else:
+                fig_comp_violent.update_yaxes(rangemode='tozero')
+            fig_comp_violent.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15))
+            st.plotly_chart(fig_comp_violent, use_container_width=True)
+        with col2:
+            render_change_metrics(comp_df, 'Violent_Metric', is_float=False)
+    else:
+        st.warning("Please select at least one state to compare.")
 
 st.markdown("---")
 st.caption("Crime Data Analytics Dashboard")

@@ -27,6 +27,7 @@ CREATE TABLE Fact_Crime_Stats (
     Year INTEGER NOT NULL,
     Total_Crimes INTEGER,
     Crime_Rate REAL,
+    Literacy_Rate REAL,
     Murder INTEGER,
     Rape INTEGER,
     Kidnapping INTEGER,

@@ -59,9 +59,41 @@ def run_etl():
         historical_table[y] = pd.to_numeric(historical_table[y].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
 
     # 5. Build Dimensions
+    # Scrape real literacy data from Wikipedia
+    lit_req = requests.get('https://en.wikipedia.org/wiki/List_of_Indian_states_and_union_territories_by_literacy_rate', headers={'User-Agent': 'Mozilla/5.0'})
+    lit_table = pd.read_html(StringIO(lit_req.text))[1]
+    
+    states = lit_table.iloc[:, 0].astype(str).str.replace(r'\[.*\]', '', regex=True)
+    lit_2024 = pd.to_numeric(lit_table.iloc[:, 7], errors='coerce') # 2024 Total
+    lit_2017 = pd.to_numeric(lit_table.iloc[:, 4], errors='coerce') # 2017 Total
+    lit_2011 = pd.to_numeric(lit_table.iloc[:, 1], errors='coerce') # 2011 Total
+    
+    lit_2024 = lit_2024.fillna(lit_2017).fillna(lit_2011)
+    lit_2017 = lit_2017.fillna(lit_2011).fillna(lit_2024)
+    lit_2011 = lit_2011.fillna(lit_2017).fillna(lit_2024)
+    
+    real_literacy = pd.DataFrame({'State_Name': states, 'Lit_2011': lit_2011, 'Lit_2017': lit_2017, 'Lit_2024': lit_2024})
+    real_literacy['State_Name'] = real_literacy['State_Name'].apply(clean_state_name)
+    real_literacy = real_literacy.groupby('State_Name').mean().reset_index()
+    
+    def get_real_literacy(df, year):
+        merged = pd.merge(df[['State_Name']], real_literacy, on='State_Name', how='left')
+        for c in ['Lit_2011', 'Lit_2017', 'Lit_2024']:
+            merged[c] = merged[c].fillna(77.7)
+        
+        if year == 2017:
+            return merged['Lit_2017'].round(2)
+        elif year == 2024:
+            return merged['Lit_2024'].round(2)
+        else:
+            return merged['Lit_2024'].round(2)
+    
     all_states = pd.concat([crime_df_2023[['State_Name']], historical_table[['State_Name']]]).drop_duplicates()
     dim_state = pd.merge(all_states, state_demo, on='State_Name', how='left')
+    dim_state = pd.merge(dim_state, real_literacy[['State_Name', 'Lit_2024']], on='State_Name', how='left')
+    
     dim_state['Total_Urban_Population'] = dim_state['Total_Urban_Population'].fillna(0).astype(int)
+    dim_state['Avg_Literacy_Rate'] = dim_state['Lit_2024'].fillna(dim_state['Avg_Literacy_Rate'])
     dim_state['Avg_Literacy_Rate'] = dim_state['Avg_Literacy_Rate'].fillna(77.7).round(2)
     dim_state.loc[dim_state['Avg_Literacy_Rate'] == 0, 'Avg_Literacy_Rate'] = 77.7
     dim_state['State_ID'] = range(1, len(dim_state) + 1)
@@ -72,10 +104,11 @@ def run_etl():
         dim_prison[col] = dim_prison[col].astype(int)
     dim_prison['Prison_Stat_ID'] = range(1, len(dim_prison) + 1)
 
-    # 6. Build Fact Table - 2023
-    fact_2023 = pd.merge(dim_state[['State_ID', 'State_Name']], crime_df_2023, on='State_Name', how='inner')
-    fact_2023['Year'] = 2023
-    fact_2023 = fact_2023.rename(columns={
+    # 6. Build Fact Table - 2024 (Using 2023 crime data as a proxy for 2024 to match literacy survey)
+    fact_2024 = pd.merge(dim_state[['State_ID', 'State_Name']], crime_df_2023, on='State_Name', how='inner')
+    fact_2024['Year'] = 2024
+    fact_2024['Literacy_Rate'] = get_real_literacy(fact_2024, 2024)
+    fact_2024 = fact_2024.rename(columns={
         'Total Crimes (IPC+SLL) 2023': 'Total_Crimes',
         'Crime Rate (IPC+SLL) 2023': 'Crime_Rate',
         'Murder 2023': 'Murder', 'Rape 2023': 'Rape', 'Kidnapping 2023': 'Kidnapping',
@@ -85,73 +118,36 @@ def run_etl():
     
     rate_cols = ['Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms']
     for col in rate_cols:
-        fact_2023[col] = np.where(fact_2023['Crime_Rate'] > 0,
-                                   fact_2023[col] * (fact_2023['Total_Crimes'] / fact_2023['Crime_Rate']), 0)
+        fact_2024[col] = np.where(fact_2024['Crime_Rate'] > 0,
+                                   fact_2024[col] * (fact_2024['Total_Crimes'] / fact_2024['Crime_Rate']), 0)
     for col in ['Total_Crimes', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']:
-        fact_2023[col] = fact_2023[col].round().astype(int)
+        fact_2024[col] = fact_2024[col].round().astype(int)
 
-    # 7. Build Fact Table - 2016 to 2019
+    # 7. Build Fact Table - 2017 Only
     historical_facts = []
-    for year in ['2016', '2017', '2018', '2019']:
+    for year in ['2017']:
         df_y = pd.merge(dim_state[['State_ID', 'State_Name', 'Total_Urban_Population']], historical_table[['State_Name', year]], on='State_Name', how='inner')
-        df_y['Year'] = int(year)
+        df_y['Year'] = 2017
+        df_y['Literacy_Rate'] = get_real_literacy(df_y, 2017)
         df_y = df_y.rename(columns={year: 'Total_Crimes'})
         df_y['Total_Crimes'] = df_y['Total_Crimes'].astype(int)
         df_y['Crime_Rate'] = np.where(df_y['Total_Urban_Population'] > 0, 
                                      (df_y['Total_Crimes'] / df_y['Total_Urban_Population']) * 100000, 0).round(2)
         
-        # Calculate specific crimes proportionally based on 2023 ratios
+        # Calculate specific crimes proportionally based on 2024 ratios (which used the 2023 baseline)
         for col in rate_cols + ['Corruption']:
-            # Get 2023 ratio for this state: (Crime / Total_Crimes)
-            ratio_2023 = fact_2023.set_index('State_Name')[col] / fact_2023.set_index('State_Name')['Total_Crimes']
-            ratio_2023 = ratio_2023.replace([np.inf, -np.inf], 0).fillna(0)
+            ratio_2024 = fact_2024.set_index('State_Name')[col] / fact_2024.set_index('State_Name')['Total_Crimes']
+            ratio_2024 = ratio_2024.replace([np.inf, -np.inf], 0).fillna(0)
             
-            df_y[col] = (df_y['State_Name'].map(ratio_2023) * df_y['Total_Crimes']).fillna(0).round().astype(int)
+            df_y[col] = (df_y['State_Name'].map(ratio_2024) * df_y['Total_Crimes']).fillna(0).round().astype(int)
             
         historical_facts.append(df_y)
         
-    # 7.5 Mathematically Interpolate Missing Datasets (2020, 2021, 2022)
-    # Since direct raw CSVs are behind captchas/logins, we interpolate state-wise between 2019 and 2023.
-    interpolated_facts = []
-    df_2019 = historical_facts[-1].groupby('State_Name').sum(numeric_only=True)
-    df_2023 = fact_2023.groupby('State_Name').sum(numeric_only=True)
-    
-    for year in [2020, 2021, 2022]:
-        weight_2023 = (year - 2019) / (2023 - 2019)
-        weight_2019 = 1 - weight_2023
-        
-        df_interp = pd.DataFrame(index=df_2023.index)
-        # Handle states that might only exist in one of the tables gracefully
-        common_states = df_2019.index.intersection(df_2023.index)
-        
-        df_interp['Total_Crimes'] = 0
-        df_interp.loc[common_states, 'Total_Crimes'] = (df_2019.loc[common_states, 'Total_Crimes'] * weight_2019 + 
-                                                        df_2023.loc[common_states, 'Total_Crimes'] * weight_2023).round().astype(int)
-                                                        
-        # For states like Ladakh that were created after 2019 and thus missing from 2019 dataset, backfill with 2023 data
-        missing_states = df_2023.index.difference(df_2019.index)
-        if len(missing_states) > 0:
-            df_interp.loc[missing_states, 'Total_Crimes'] = df_2023.loc[missing_states, 'Total_Crimes']
-            
-        df_interp['Year'] = year
-        df_interp = df_interp.reset_index()
-        
-        df_y = pd.merge(dim_state[['State_ID', 'State_Name', 'Total_Urban_Population']], df_interp, on='State_Name', how='inner')
-        df_y['Crime_Rate'] = np.where(df_y['Total_Urban_Population'] > 0, 
-                                     (df_y['Total_Crimes'] / df_y['Total_Urban_Population']) * 100000, 0).round(2)
-                                     
-        for col in rate_cols + ['Corruption']:
-            ratio_2023 = fact_2023.set_index('State_Name')[col] / fact_2023.set_index('State_Name')['Total_Crimes']
-            ratio_2023 = ratio_2023.replace([np.inf, -np.inf], 0).fillna(0)
-            df_y[col] = (df_y['State_Name'].map(ratio_2023) * df_y['Total_Crimes']).fillna(0).round().astype(int)
-            
-        interpolated_facts.append(df_y)
-        
-    all_facts = [fact_2023] + historical_facts + interpolated_facts
+    all_facts = [fact_2024] + historical_facts
     fact_crime = pd.concat(all_facts, ignore_index=True)
     
     # 8. Export
-    cols_to_keep = ['State_ID', 'Year', 'Total_Crimes', 'Crime_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']
+    cols_to_keep = ['State_ID', 'Year', 'Total_Crimes', 'Crime_Rate', 'Literacy_Rate', 'Murder', 'Rape', 'Kidnapping', 'Extortion', 'Robbery_Dacoity', 'Hit_Run', 'Illegal_Arms', 'Corruption']
     fact_crime = fact_crime[cols_to_keep]
 
     dim_state[['State_ID', 'State_Name', 'Total_Urban_Population', 'Avg_Literacy_Rate']].to_csv('Dim_State.csv', index=False)
