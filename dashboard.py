@@ -262,7 +262,6 @@ elif page == "Comparison":
         
         # 3. Violent Crime Breakdown (2024 ONLY)
         st.subheader("3. Violent Crime Breakdown (2024)")
-        st.info("⚠️ Note: 2017 granular violent crime data is not available in the public dataset, so only 2024 is shown here.")
         v_opt = st.selectbox("Select Violent Crime Type to Compare:", ['All Violent Crimes', 'Murder', 'Rape', 'Kidnapping', 'Robbery'])
         comp_df_2024 = comp_df[comp_df['Year'] == 2024].copy()
         
