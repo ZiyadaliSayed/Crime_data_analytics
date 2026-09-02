@@ -30,8 +30,8 @@ doc.add_paragraph('Collect data from multiple sources.\nExample Sources')
 doc.add_paragraph('Source 1: real_crime_data_scraped.csv\n| State / UT | Total Crimes (IPC+SLL) | Crime Rate | Murder | Rape | Kidnapping | Extortion | Robbery | Hit & Run | Illegal arms | Corruption |')
 doc.add_paragraph('Source 2: indian_cities_demographics.csv\n| state_name | population_total | effective_literacy_rate_total |')
 
-doc.add_paragraph('Source 3: Wikipedia Crime in India (Web Scrape)\n| State/UT | 2017 |')
-doc.add_paragraph('Source 4: Wikipedia Literacy Rate (Web Scrape)\n| State or UT | 2017 Total | 2024 Total |')
+doc.add_paragraph('Source 3: wikipedia_crime_in_india.csv\n| State/UT | 2017 |')
+doc.add_paragraph('Source 4: wikipedia_literacy_rates.csv\n| State or UT | 2017 Total | 2024 Total |')
 doc.add_paragraph('Deliverable\nRaw datasets', style='Body Text').runs[0].bold = True
 
 doc.add_paragraph('_' * 80)
@@ -50,7 +50,7 @@ doc.add_paragraph('_' * 80)
 
 # Phase 4
 doc.add_paragraph('Phase 4: ETL Pipeline', style='Body Text').runs[0].bold = True
-doc.add_paragraph('Extract\nRead CSV files and HTML tables\nreal_crime_data_scraped.csv\nindian_cities_demographics.csv\nWikipedia HTML Tables')
+doc.add_paragraph('Extract\nRead CSV files\nreal_crime_data_scraped.csv\nindian_cities_demographics.csv\nwikipedia_crime_in_india.csv\nwikipedia_literacy_rates.csv')
 doc.add_paragraph('Transform\nPerform')
 doc.add_paragraph('• Merge tables based on State_Name', style='List Bullet')
 doc.add_paragraph('• Data cleaning', style='List Bullet')
@@ -190,7 +190,7 @@ table2 = doc.add_table(rows=8, cols=2)
 table2.cell(0, 0).text = 'Outcome'
 table2.cell(0, 1).text = 'Description'
 table2.cell(1, 0).text = 'ETL Pipeline'
-table2.cell(1, 1).text = 'Extract, transform, and load data from CSVs and Web Scrapes into the warehouse'
+table2.cell(1, 1).text = 'Extract, transform, and load data from local CSVs into the warehouse'
 table2.cell(2, 0).text = 'Star Schema'
 table2.cell(2, 1).text = 'Fact table linked to State dimension'
 table2.cell(3, 0).text = 'Snowflake Schema'

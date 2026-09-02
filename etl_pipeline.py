@@ -39,9 +39,8 @@ def run_etl():
         if col in crime_df_2023.columns:
             crime_df_2023[col] = pd.to_numeric(crime_df_2023[col].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
     
-    # 4. Load 2016, 2017, 2018, 2019 Crime Data (From Wikipedia)
-    r = requests.get('https://en.wikipedia.org/wiki/Crime_in_India', headers={'User-Agent': 'Mozilla/5.0'})
-    historical_table = pd.read_html(StringIO(r.text))[2]
+    # 4. Load 2016, 2017, 2018, 2019 Crime Data (Local CSV)
+    historical_table = pd.read_csv('wikipedia_crime_in_india.csv')
     historical_table = historical_table.dropna(subset=['State/UT'])
     historical_table = historical_table[~historical_table['State/UT'].isin(['India', 'States', 'Union Territories (UT)', 'Total (States)', 'Total (UTs)', 'Total (All India)', 'Union Territories'])]
     historical_table['State_Name'] = historical_table['State/UT'].apply(clean_state_name)
@@ -50,9 +49,8 @@ def run_etl():
         historical_table[y] = pd.to_numeric(historical_table[y].astype(str).str.replace(',', ''), errors='coerce').fillna(0)
 
     # 5. Build Dimensions
-    # Scrape real literacy data from Wikipedia
-    lit_req = requests.get('https://en.wikipedia.org/wiki/List_of_Indian_states_and_union_territories_by_literacy_rate', headers={'User-Agent': 'Mozilla/5.0'})
-    lit_table = pd.read_html(StringIO(lit_req.text))[1]
+    # Load real literacy data from local CSV
+    lit_table = pd.read_csv('wikipedia_literacy_rates.csv')
     
     states = lit_table.iloc[:, 0].astype(str).str.replace(r'\[.*\]', '', regex=True)
     lit_2024 = pd.to_numeric(lit_table.iloc[:, 7], errors='coerce') # 2024 Total
