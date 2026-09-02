@@ -58,7 +58,7 @@ doc.add_paragraph('• Surrogate key generation', style='List Bullet')
 doc.add_paragraph('• Create derived columns', style='List Bullet')
 doc.add_paragraph('Example\nCrime Rate per 1 Lakh\n= (Total_Crimes / Total_Urban_Population) * 100000')
 doc.add_paragraph('Load\nLoad into\nSQLite')
-doc.add_paragraph('Deliverable\nWorking ETL Pipeline', style='Body Text').runs[0].bold = True
+doc.add_paragraph('Deliverable\nWorking ETL Pipeline (See Appendix A for full Python Source Code)', style='Body Text').runs[0].bold = True
 doc.add_paragraph('Tools')
 doc.add_paragraph('• Python (Pandas, Requests)', style='List Bullet')
 doc.add_paragraph('• SQLite3', style='List Bullet')
@@ -229,5 +229,22 @@ for i in range(5):
             table3.cell(i, j).paragraphs[0].runs[0].bold = True
 
 doc.add_paragraph('\nThis workflow exposes students to the complete Business Intelligence lifecycle, from raw operational data to dimensional modeling, ETL, OLAP analysis, and interactive decision-support dashboards, making it well suited as a comprehensive undergraduate mini-project.')
+
+doc.add_page_break()
+doc.add_heading('Appendix A: Python ETL Source Code', level=1)
+doc.add_paragraph('The following is the complete, working Python script (etl_pipeline.py) used to extract the datasets, transform the crime and demographic metrics, and load the clean data into the Fact and Dimension tables.')
+
+try:
+    with open('etl_pipeline.py', 'r') as f:
+        code_content = f.read()
+    
+    # Add code with a smaller font for readability
+    code_para = doc.add_paragraph(code_content)
+    code_para.style = 'No Spacing'
+    for run in code_para.runs:
+        run.font.name = 'Courier New'
+        run.font.size = Pt(8)
+except Exception as e:
+    doc.add_paragraph(f"Error loading source code: {e}")
 
 doc.save('Final_Project_Report_Formatted.docx')
