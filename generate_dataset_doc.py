@@ -23,7 +23,7 @@ doc.add_paragraph('• effective_literacy_rate_total (used as a fallback average
 
 doc.add_heading('3. Wikipedia: Crime in India (Live Web Scrape)', level=2)
 doc.add_paragraph('Source Link: https://en.wikipedia.org/wiki/Crime_in_India')
-doc.add_paragraph('Usage: The ETL pipeline live-scrapes the HTML tables on this page to extract the historical total crime records registered in 2017 for every state. This acts as the pure data baseline for the exact 2017 to 2024 comparisons.')
+doc.add_paragraph('Usage: The ETL pipeline live-scrapes the HTML tables on this page to extract the historical total crime records registered in 2017 for every state. This acts as the pure data baseline for the exact 2017 to 2024 comparisons. Note: Granular breakdowns for specific violent crimes (Murder, Rape, etc.) are not publicly available in this dataset, so the project strictly analyzes "Total Crimes" for the historical comparison.')
 doc.add_paragraph('Columns Used:')
 doc.add_paragraph('• State/UT', style='List Bullet')
 doc.add_paragraph('• 2017 (Historical total crime count)', style='List Bullet')
