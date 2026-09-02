@@ -39,7 +39,7 @@ doc.add_paragraph('_' * 80)
 # Phase 3
 doc.add_paragraph('Phase 3: Data Preprocessing', style='Body Text').runs[0].bold = True
 doc.add_paragraph('Perform')
-doc.add_paragraph('• Remove missing values from scraped tables', style='List Bullet')
+doc.add_paragraph('• Remove missing values from CSV datasets', style='List Bullet')
 doc.add_paragraph('• Standardize state names across all datasets', style='List Bullet')
 doc.add_paragraph('• Convert string numbers with commas to integers', style='List Bullet')
 doc.add_paragraph('• Calculate missing demographic fields (e.g., Illiteracy_Rate)', style='List Bullet')
