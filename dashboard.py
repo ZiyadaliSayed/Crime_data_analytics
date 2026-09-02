@@ -255,13 +255,10 @@ elif page == "Comparison":
         
         # 3. Violent Crime Breakdown (2024 ONLY)
         st.subheader("3. Violent Crime Breakdown (2024)")
-        v_opt = st.selectbox("Select Violent Crime Type to Compare:", ['All Violent Crimes', 'Murder', 'Rape', 'Kidnapping', 'Robbery'])
+        v_opt = st.selectbox("Select Violent Crime Type to Compare:", ['Murder', 'Rape', 'Kidnapping', 'Robbery'])
         comp_df_2024 = comp_df[comp_df['Year'] == 2024].copy()
         
-        if v_opt == 'All Violent Crimes':
-            comp_df_2024['Violent_Metric'] = comp_df_2024['Murder'] + comp_df_2024['Rape'] + comp_df_2024['Kidnapping'] + comp_df_2024['Robbery']
-            v_title = "Violent Crimes (Murder + Rape + Kidnapping + Robbery)"
-        elif v_opt == 'Robbery':
+        if v_opt == 'Robbery':
             comp_df_2024['Violent_Metric'] = comp_df_2024['Robbery']
             v_title = f"{v_opt}"
         else:
