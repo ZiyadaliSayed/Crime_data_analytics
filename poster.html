@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Poster</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .poster-container {
+            width: 1400px;
+            height: 800px;
+            background-color: white;
+            border: 2px solid #ccc;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Top Header */
+        .header-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr 180px;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .logo-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #ccc;
+            padding: 5px;
+        }
+
+        .logo-box img {
+            max-width: 100%;
+            max-height: 90px;
+        }
+
+        .titles-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .university-title {
+            background-color: #8faadc;
+            color: #203764;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            text-transform: uppercase;
+            border: 1px solid #fff;
+        }
+
+        .department-title {
+            background-color: #203764;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            padding: 4px;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .project-title {
+            background-color: #203764;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            margin-top: 2px;
+        }
+
+        .subtitle {
+            background-color: #203764;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            padding-bottom: 5px;
+        }
+        
+        .authors {
+            background-color: #203764;
+            color: white;
+            font-size: 14px;
+            text-align: center;
+            padding-bottom: 8px;
+            font-style: italic;
+        }
+
+        .class-box {
+            background-color: #ffe699;
+            border: 1px solid #d4af37;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .faculty-box {
+            background-color: #ffe699;
+            border: 1px solid #d4af37;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: -85px;
+            width: 200px;
+            height: 80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Middle Section */
+        .middle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            flex: 1;
+            margin-bottom: 10px;
+        }
+
+        .box {
+            border: 1px solid #000;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Empathy Map */
+        .empathy-map {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            position: relative;
+            height: 100%;
+        }
+
+        .empathy-quadrant {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 11px;
+        }
+
+        .empathy-quadrant h4 {
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .empathy-quadrant ul {
+            padding-left: 15px;
+        }
+        
+        .empathy-quadrant li {
+            margin-bottom: 4px;
+        }
+
+        .empathy-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background-color: #0070c0;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* Requirements Table */
+        .req-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            height: 100%;
+        }
+
+        .req-table th, .req-table td {
+            border: 1px solid #000;
+            padding: 5px;
+            vertical-align: top;
+        }
+
+        .req-table th {
+            text-align: left;
+            background-color: #f2f2f2;
+        }
+
+        .req-table ul {
+            padding-left: 15px;
+            margin-top: 5px;
+        }
+        
+        .req-table li {
+            margin-bottom: 3px;
+        }
+
+        /* Architecture Flowchart */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            height: 100%;
+            padding: 20px 0;
+        }
+
+        .arch-node {
+            background: linear-gradient(to bottom, #5b9bd5, #2e75b6);
+            color: white;
+            padding: 10px 20px;
+            border: 1px solid #1f4e79;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            width: 220px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .arch-node-light {
+            background: linear-gradient(to bottom, #d9e1f2, #b4c6e7);
+            color: black;
+            border: 1px solid #8faadc;
+        }
+
+        .arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 15px solid #2e75b6;
+            margin: 5px 0;
+        }
+
+        .arch-row {
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+        
+        .arch-row::before {
+            content: "";
+            position: absolute;
+            top: -15px;
+            left: 110px;
+            right: 110px;
+            height: 2px;
+            background-color: #2e75b6;
+        }
+
+        /* Bottom Section */
+        .bottom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            padding: 0 10px;
+        }
+
+        .text-section h3 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .text-section p {
+            font-size: 13px;
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="poster-container">
+        <!-- HEADER -->
+        <div class="header-grid">
+            <div class="logo-box">
+                <!-- User can replace src with actual MIT-ADT logo image path -->
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/MIT_Academy_of_Engineering_logo.png/220px-MIT_Academy_of_Engineering_logo.png" alt="MIT-ADT Logo" style="object-fit: contain;">
+            </div>
+            
+            <div class="titles-box">
+                <div class="university-title">MIT SCHOOL OF COMPUTING</div>
+                <div class="department-title">DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING</div>
+                <div class="project-title">CRIME DATA ANALYTICS</div>
+                <div class="subtitle">India State-Level Crime Data Warehouse & BI Dashboard</div>
+                <div class="authors">Ziyadali Sayed (Group Id: SY2203)</div>
+            </div>
+
+            <div class="class-box">
+                <div>Class: SY-22</div>
+                <div>Group Id: SY2203</div>
+            </div>
+        </div>
+
+        <!-- FACULTY GUIDE OVERLAP -->
+        <div class="faculty-box">
+            <div>Faculty Guide:</div>
+            <div style="margin-top: 5px;">Prof. Moushmee Kuri</div>
+        </div>
+
+        <!-- MIDDLE CONTENT -->
+        <div class="middle-grid" style="margin-top: 10px;">
+            
+            <!-- LEFT: EMPATHY MAP -->
+            <div class="box" style="padding:0;">
+                <div class="empathy-map">
+                    <div class="empathy-quadrant" style="border-right: none; border-bottom: none;">
+                        <h4>What the Analyst SAYS</h4>
+                        <ul>
+                            <li>"Crime statistics are scattered across multiple PDFs."</li>
+                            <li>"I can't easily compare states year-over-year."</li>
+                            <li>"The raw datasets are too massive to analyze in Excel."</li>
+                        </ul>
+                    </div>
+                    <div class="empathy-quadrant" style="border-bottom: none;">
+                        <h4>What the Analyst THINKS</h4>
+                        <ul>
+                            <li>How does crime correlate with literacy?</li>
+                            <li>Is the data normalized for population differences?</li>
+                            <li>Is there a faster way to query this information?</li>
+                        </ul>
+                    </div>
+                    <div class="empathy-quadrant" style="border-right: none;">
+                        <h4>What the Analyst DOES</h4>
+                        <ul>
+                            <li>Manually downloads disparate CSVs from Kaggle & NCRB.</li>
+                            <li>Spends hours cleaning data and removing duplicates.</li>
+                            <li>Struggles to build interactive visualizations.</li>
+                        </ul>
+                    </div>
+                    <div class="empathy-quadrant">
+                        <h4>What the Analyst FEELS</h4>
+                        <ul>
+                            <li>Overwhelmed by raw data volume and inconsistencies.</li>
+                            <li>Frustrated by the lack of automated analytical tools.</li>
+                            <li>Anxious about presenting inaccurate statistics.</li>
+                        </ul>
+                    </div>
+                    <div class="empathy-center">Data<br>Analyst</div>
+                </div>
+            </div>
+
+            <!-- CENTER: REQUIREMENTS TABLE -->
+            <div class="box" style="padding:0;">
+                <table class="req-table">
+                    <tr>
+                        <th style="width: 10%;">Sr. No.</th>
+                        <th style="width: 45%;">Requirement</th>
+                        <th style="width: 45%;">Proposed Solution</th>
+                    </tr>
+                    <tr>
+                        <td>1.</td>
+                        <td><strong>Centralized Data Storage</strong><br>
+                            <ul>
+                                <li>Multi-source data integration</li>
+                                <li>Structured relational storage</li>
+                                <li>Efficient query retrieval</li>
+                            </ul>
+                        </td>
+                        <td>We design and implement a Star Schema Data Warehouse using SQLite, normalizing crime incidents and demographics into Fact and Dimension tables.</td>
+                    </tr>
+                    <tr>
+                        <td>2.</td>
+                        <td><strong>Automated Data Processing</strong><br>
+                            <ul>
+                                <li>Handle massive datasets</li>
+                                <li>Data cleaning and mapping</li>
+                                <li>Missing value imputation</li>
+                            </ul>
+                        </td>
+                        <td>A fully automated Python ETL pipeline is deployed to Extract, Transform, and Load 6.2M+ records, ensuring absolute data integrity and removing duplicates.</td>
+                    </tr>
+                    <tr>
+                        <td>3.</td>
+                        <td><strong>Interactive Visualization</strong><br>
+                            <ul>
+                                <li>Real-time OLAP querying</li>
+                                <li>Dynamic filtering capability</li>
+                                <li>User-friendly interface</li>
+                            </ul>
+                        </td>
+                        <td>A BI Dashboard built with Streamlit and Plotly provides interactive bar charts, scatter plots, and KPI cards for seamless ROLAP slicing and dicing.</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- RIGHT: ARCHITECTURE FLOWCHART -->
+            <div class="box">
+                <div class="arch-diagram">
+                    <div class="arch-node">
+                        [ Raw Datasets ]<br>
+                        <span style="font-weight:normal; font-size:11px;">(Kaggle / NCRB / Wikipedia)</span>
+                    </div>
+                    
+                    <div class="arrow-down"></div>
+                    
+                    <div class="arch-node arch-node-light">
+                        Python ETL Pipeline<br>
+                        <span style="font-weight:normal; font-size:11px;">(Extract, Clean, Transform)</span>
+                    </div>
+
+                    <div class="arrow-down"></div>
+
+                    <div class="arch-node">
+                        Data Warehouse<br>
+                        <span style="font-weight:normal; font-size:11px;">(SQLite Star Schema)</span>
+                    </div>
+
+                    <div class="arrow-down" style="height:20px; border-top-width: 20px;"></div>
+
+                    <div class="arch-row" style="margin-top: 10px;">
+                        <div class="arch-node arch-node-light" style="width: 120px; font-size:11px;">
+                            Fact_Crime_Stats<br>(Measures)
+                        </div>
+                        <div class="arch-node arch-node-light" style="width: 120px; font-size:11px;">
+                            Dim_State<br>(Dimensions)
+                        </div>
+                    </div>
+
+                    <div class="arrow-down" style="margin-top: 15px;"></div>
+
+                    <div class="arch-node">
+                        Streamlit BI Dashboard<br>
+                        <span style="font-weight:normal; font-size:11px;">(Plotly Visualizations & OLAP)</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM TEXT SECTION -->
+        <div class="bottom-grid">
+            <div class="text-section">
+                <h3>Problem Statement</h3>
+                <p>The current state of public crime data in India is highly fragmented, existing in disparate files and varying formats across different years. Analysts lack a unified, queryable repository, making it difficult to track long-term trends, compare state-level statistics, or uncover crucial socio-demographic correlations (such as literacy versus crime rates). This project is needed to ensure accurate, automated, and insightful analysis of large-scale crime datasets.</p>
+            </div>
+            <div class="text-section">
+                <h3>Proposed Solution</h3>
+                <p>The system proposes a complete Business Intelligence pipeline. We extract historical and current crime data, transform it into a clean Star Schema, and load it into a centralized Data Warehouse. A Streamlit-based interactive dashboard is deployed on top of this warehouse to enable dynamic Relational OLAP (ROLAP) analysis. This allows end-users to easily slice, dice, and visualize complex metrics through an intuitive web interface.</p>
+            </div>
+            <div class="text-section">
+                <h3>Scope and Feasibility</h3>
+                <p>The project focuses on integrating multi-source crime and demographic data into a functional Data Cube. It is highly feasible using modern Python libraries (Pandas, Plotly, Streamlit) and SQLite for the backend. The system operates entirely offline with high performance, making it a scalable architecture suitable for academic research, policy-making, and public awareness deployment.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
