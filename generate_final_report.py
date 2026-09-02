@@ -90,17 +90,12 @@ doc.add_paragraph('Deliverable\nOperational Data Warehouse (See Appendix B for S
 doc.add_paragraph('_' * 80)
 
 # Phase 8
-doc.add_paragraph('Phase 8: Create Data Cube', style='Body Text').runs[0].bold = True
-doc.add_paragraph('Dimensions')
-doc.add_paragraph('• State', style='List Bullet')
-doc.add_paragraph('• Year', style='List Bullet')
-doc.add_paragraph('• Crime Type', style='List Bullet')
-doc.add_paragraph('Measures')
-doc.add_paragraph('• Total Crimes', style='List Bullet')
-doc.add_paragraph('• Crime Rate', style='List Bullet')
-doc.add_paragraph('• Illiteracy Rate', style='List Bullet')
-doc.add_paragraph('Cube\n        Time\n         |\n         |\nLocation ---- Crime Counts\n         |\n         |\n    Crime Type')
-doc.add_paragraph('Deliverable\nData Cube', style='Body Text').runs[0].bold = True
+doc.add_paragraph('Phase 8: Create Data Cube (ROLAP Implementation)', style='Body Text').runs[0].bold = True
+doc.add_paragraph('For this project, we implemented a Relational OLAP (ROLAP) Data Cube. Rather than using a physical multi-dimensional server, we defined a logical cube over our Star Schema that mathematically maps our dimensions to our analytical measures.')
+doc.add_paragraph('Cube Architecture:')
+doc.add_paragraph('• Dimensions (Axes): Location (State), Time (Year), Category (Crime Type)', style='List Bullet')
+doc.add_paragraph('• Calculated Measures: Total Crimes, Crime Rate per 1 Lakh, Literacy Rate', style='List Bullet')
+doc.add_paragraph('Deliverable\nLogical Data Cube Architecture Diagram (See Flowchart Below)', style='Body Text').runs[0].bold = True
 
 doc.add_paragraph('_' * 80)
 
