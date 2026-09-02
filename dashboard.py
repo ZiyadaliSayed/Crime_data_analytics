@@ -155,15 +155,16 @@ if page == "Detailed Analytics (Graphs)":
     st.markdown("---")
     st.header("4. Violent Crime Breakdown")
     
-    # Using all states instead of top 10 as per user request to show all
-    # Rename for clearer display
-    state_dist = state_dist.rename(columns={'Robbery_Dacoity': 'Robbery'})
-    melted = state_dist.melt(id_vars='State_Name', value_vars=['Murder', 'Rape', 'Kidnapping', 'Robbery'],
-                        var_name='Crime Type', value_name='Count')
-    fig_breakdown = px.bar(melted, x='State_Name', y='Count', color='Crime Type', barmode='group',
-                           title="Violent Crime Breakdown across All States")
-    fig_breakdown.update_layout(xaxis={'categoryorder':'total descending'}, height=700, hovermode='x unified', margin=dict(b=150))
-    st.plotly_chart(fig_breakdown, use_container_width=True)
+    if selected_year == 2017:
+        st.info("⚠️ Official granular breakdowns for Murder, Rape, etc., are not available in this 2017 open dataset. Only 'Total Crimes' is available for 2017.")
+    else:
+        state_dist = state_dist.rename(columns={'Robbery_Dacoity': 'Robbery'})
+        melted = state_dist.melt(id_vars='State_Name', value_vars=['Murder', 'Rape', 'Kidnapping', 'Robbery'],
+                            var_name='Crime Type', value_name='Count')
+        fig_breakdown = px.bar(melted, x='State_Name', y='Count', color='Crime Type', barmode='group',
+                               title="Violent Crime Breakdown across All States")
+        fig_breakdown.update_layout(xaxis={'categoryorder':'total descending'}, height=700, hovermode='x unified', margin=dict(b=150))
+        st.plotly_chart(fig_breakdown, use_container_width=True)
     
     st.markdown("---")
     st.header("5. National Crime Trend Over Time")
@@ -259,35 +260,34 @@ elif page == "Comparison":
             
         st.markdown("---")
         
-        # 3. Violent Crime Comparison
-        st.subheader("3. Violent Crime Comparison")
+        # 3. Violent Crime Breakdown (2024 ONLY)
+        st.subheader("3. Violent Crime Breakdown (2024)")
+        st.info("⚠️ Note: 2017 granular violent crime data is not available in the public dataset, so only 2024 is shown here.")
         v_opt = st.selectbox("Select Violent Crime Type to Compare:", ['All Violent Crimes', 'Murder', 'Rape', 'Kidnapping', 'Robbery'])
+        comp_df_2024 = comp_df[comp_df['Year'] == 2024].copy()
+        
         if v_opt == 'All Violent Crimes':
-            comp_df['Violent_Metric'] = comp_df['Murder'] + comp_df['Rape'] + comp_df['Kidnapping'] + comp_df['Robbery_Dacoity']
-            v_title = "Violent Crimes (Murder + Rape + Kidnapping + Robbery) Over Time"
+            comp_df_2024['Violent_Metric'] = comp_df_2024['Murder'] + comp_df_2024['Rape'] + comp_df_2024['Kidnapping'] + comp_df_2024['Robbery_Dacoity']
+            v_title = "Violent Crimes (Murder + Rape + Kidnapping + Robbery)"
         elif v_opt == 'Robbery':
-            comp_df['Violent_Metric'] = comp_df['Robbery_Dacoity']
-            v_title = f"{v_opt} Over Time"
+            comp_df_2024['Violent_Metric'] = comp_df_2024['Robbery_Dacoity']
+            v_title = f"{v_opt}"
         else:
-            comp_df['Violent_Metric'] = comp_df[v_opt]
-            v_title = f"{v_opt} Over Time"
+            comp_df_2024['Violent_Metric'] = comp_df_2024[v_opt]
+            v_title = f"{v_opt}"
             
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            violent_order = comp_df.groupby('State_Name')['Violent_Metric'].max().sort_values(ascending=False).index.tolist()
-            fig_comp_violent = px.bar(comp_df, x='State_Name', y='Violent_Metric', color='Year_Str', barmode='group',
-                                       title=v_title.replace("Over Time", "(2017 vs 2024)"),
-                                       category_orders={"State_Name": violent_order},
-                                       color_discrete_map=year_color_map,
-                                       labels={'Violent_Metric': f'Total {v_opt}', 'Year_Str': 'Year', 'State_Name': 'State'})
-            if use_log_scale:
-                fig_comp_violent.update_yaxes(type='log')
-            else:
-                fig_comp_violent.update_yaxes(rangemode='tozero')
-            fig_comp_violent.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15))
-            st.plotly_chart(fig_comp_violent, use_container_width=True)
-        with col2:
-            render_change_metrics(comp_df, 'Violent_Metric', is_float=False)
+        violent_order = comp_df_2024.groupby('State_Name')['Violent_Metric'].max().sort_values(ascending=False).index.tolist()
+        fig_comp_violent = px.bar(comp_df_2024, x='State_Name', y='Violent_Metric',
+                                   title=v_title + " in 2024",
+                                   category_orders={"State_Name": violent_order},
+                                   color_discrete_sequence=['#ff7f0e'],
+                                   labels={'Violent_Metric': f'Total {v_opt}', 'State_Name': 'State'})
+        if use_log_scale:
+            fig_comp_violent.update_yaxes(type='log')
+        else:
+            fig_comp_violent.update_yaxes(rangemode='tozero')
+        fig_comp_violent.update_layout(hovermode='x unified', hoverlabel=dict(font_size=15))
+        st.plotly_chart(fig_comp_violent, use_container_width=True)
     else:
         st.warning("Please select at least one state to compare.")
 

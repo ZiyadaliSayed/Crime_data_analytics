@@ -119,12 +119,10 @@ def run_etl():
         df_y['Crime_Rate'] = np.where(df_y['Total_Urban_Population'] > 0, 
                                      (df_y['Total_Crimes'] / df_y['Total_Urban_Population']) * 100000, 0).round(2)
         
-        # Calculate specific crimes proportionally based on 2024 ratios (which used the 2023 baseline)
+        # To strictly use 100% real data, we do not mathematically estimate specific violent crimes for 2017.
+        # We set them to 0 (meaning 'No Data Available' for specific breakdowns, only Total Crimes is available).
         for col in rate_cols + ['Corruption']:
-            ratio_2024 = fact_2024.set_index('State_Name')[col] / fact_2024.set_index('State_Name')['Total_Crimes']
-            ratio_2024 = ratio_2024.replace([np.inf, -np.inf], 0).fillna(0)
-            
-            df_y[col] = (df_y['State_Name'].map(ratio_2024) * df_y['Total_Crimes']).fillna(0).round().astype(int)
+            df_y[col] = 0
             
         historical_facts.append(df_y)
         
