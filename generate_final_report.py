@@ -85,7 +85,7 @@ doc.add_paragraph('_' * 80)
 # Phase 7
 doc.add_paragraph('Phase 7: Create Data Warehouse', style='Body Text').runs[0].bold = True
 doc.add_paragraph('Create SQL tables\nCREATE TABLE Dim_State\nCREATE TABLE Fact_Crime_Stats\nLoad transformed data.')
-doc.add_paragraph('Deliverable\nOperational Data Warehouse', style='Body Text').runs[0].bold = True
+doc.add_paragraph('Deliverable\nOperational Data Warehouse (See Appendix B for SQL Schema Code)', style='Body Text').runs[0].bold = True
 
 doc.add_paragraph('_' * 80)
 
@@ -246,5 +246,21 @@ try:
         run.font.size = Pt(8)
 except Exception as e:
     doc.add_paragraph(f"Error loading source code: {e}")
+
+doc.add_page_break()
+doc.add_heading('Appendix B: Data Warehouse SQL Schema', level=1)
+doc.add_paragraph('The following SQL code (schema.sql) defines the Star Schema for the Data Warehouse, creating the normalized Fact and Dimension tables.')
+
+try:
+    with open('schema.sql', 'r') as f:
+        sql_content = f.read()
+    
+    sql_para = doc.add_paragraph(sql_content)
+    sql_para.style = 'No Spacing'
+    for run in sql_para.runs:
+        run.font.name = 'Courier New'
+        run.font.size = Pt(9)
+except Exception as e:
+    doc.add_paragraph(f"Error loading SQL code: {e}")
 
 doc.save('Final_Project_Report_Formatted.docx')
